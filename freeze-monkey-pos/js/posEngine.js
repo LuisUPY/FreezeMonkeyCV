@@ -1,0 +1,278 @@
+(() => {
+'use strict';
+
+const { MENU, DRINKS, SNACKS, findProduct, buildLine, money, createId } = globalThis.FreezeMonkeyMenu;
+const { loadState, saveState, exportJSON, exportExcelCSV, importExpediente, localDate, loadQueueCollapsed, saveQueueCollapsed } = globalThis.FreezeMonkeyStorage;
+
+const $ = id => document.getElementById(id);
+const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const state = loadState();
+let filter = 'todos';
+let builderProduct = null;
+let editingLineUid = null;
+let activeOrderId = null;
+let reviewingDraft = false;
+let extraTarget = 'draft';
+let toastTimer;
+let queueCollapsed = loadQueueCollapsed();
+
+function flash(message) {
+  $('toast').textContent = message; $('toast').hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => $('toast').hidden = true, 3400);
+}
+function persist() { if (!saveState(state)) flash('No se pudo guardar en este navegador. Exporta un expediente.'); }
+function subtotal(items) { return items.reduce((sum, item) => sum + item.price, 0); }
+function extrasTotal(extras) { return extras.reduce((sum, extra) => sum + extra.amount, 0); }
+function displayDate(iso) { return new Intl.DateTimeFormat('es-MX', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(iso)); }
+function categoryLabel(category) { return ({ combos: 'COMBO', frappes: 'FRAPPÉ', smoothies: 'SMOOTHIE', limonadas: 'LIMONADA', snacks: 'SNACK' })[category]; }
+function imageMarkup(src, name, className = '') {
+  return src ? `<img class="${className}" src="${escapeHTML(src)}" alt="${escapeHTML(name)}" loading="lazy">` : `<div class="image-fallback ${className}" aria-label="${escapeHTML(name)}">FM<span>🍋</span></div>`;
+}
+
+function renderCatalog() {
+  const query = $('search').value.trim().toLocaleLowerCase('es-MX');
+  const visible = MENU.filter(item => (filter === 'todos' || item.category === filter) && item.name.toLocaleLowerCase('es-MX').includes(query));
+  $('result-count').textContent = `${visible.length} productos`;
+  $('no-products').hidden = visible.length > 0;
+  $('products').innerHTML = visible.map(item => `<button class="product-card" type="button" data-product="${item.id}" aria-label="Agregar ${escapeHTML(item.name)}, ${money(item.price)}">
+    <span class="product-photo">${imageMarkup(item.image, item.name)}</span>
+    <span class="product-info"><span class="product-type">${categoryLabel(item.category)}</span><strong>${escapeHTML(item.name)}</strong><span class="product-bottom"><span>${money(item.price)}</span><span class="add-circle" aria-hidden="true">+</span></span></span>
+  </button>`).join('');
+}
+function componentBreakdown(line) {
+  if (!line.components.length) return '';
+  const regular = subtotal(line.components);
+  const adjustment = line.price - regular;
+  return `<ul class="component-list">${line.components.map(part => `<li><span>${escapeHTML(part.name)}</span><span>${money(part.price)}</span></li>`).join('')}</ul>
+    <div class="combo-adjustment"><span>Ajuste del combo</span><span>${adjustment < 0 ? '−' : '+'}${money(Math.abs(adjustment))}</span></div>`;
+}
+function renderDraft() {
+  const items = state.draft.items, extras = state.draft.extras;
+  $('draft-count').textContent = items.length;
+  $('draft-items').innerHTML = items.length ? items.map(line => `<div class="draft-line">
+    <div class="draft-thumb">${imageMarkup(line.image, line.name)}</div>
+    <div class="draft-line-main"><strong>${escapeHTML(line.name)}</strong><small>${line.components.length ? line.components.map(c => escapeHTML(c.name)).join(' · ') : 'Producto individual'}</small><div class="draft-line-actions"><button type="button" data-duplicate-line="${line.uid}" aria-label="Duplicar ${escapeHTML(line.name)}">+</button>${line.selections && (line.selections.drinks || line.selections.tenderFlavor) ? `<button type="button" data-edit-line="${line.uid}">Editar</button>` : ''}<button type="button" data-remove-line="${line.uid}" aria-label="Quitar ${escapeHTML(line.name)}">Quitar</button></div></div>
+    <b>${money(line.price)}</b></div>`).join('') : '<p class="draft-empty">Selecciona un producto para empezar.</p>';
+  $('draft-extras').innerHTML = extras.map(extra => `<div class="extra-row"><span>${escapeHTML(extra.description)}</span><b>${money(extra.amount)}</b><button type="button" data-remove-extra="${extra.uid}" data-target="draft" aria-label="Quitar extra ${escapeHTML(extra.description)}">×</button></div>`).join('');
+  $('draft-subtotal').textContent = money(subtotal(items));
+  $('draft-extras-total').textContent = money(extrasTotal(extras));
+  $('draft-total').textContent = money(subtotal(items) + extrasTotal(extras));
+  $('create-order').disabled = !items.length;
+}
+function renderSales() {
+  const today = localDate();
+  const paid = state.orders.filter(order => order.status === 'PAGADO' && order.paidAt && localDate(new Date(order.paidAt)) === today);
+  $('sales-count').textContent = paid.length;
+  $('sales-total').textContent = money(paid.reduce((sum, order) => sum + subtotal(order.items) + extrasTotal(order.extras), 0));
+}
+function renderQueue() {
+  const open = state.orders.filter(order => order.status !== 'PAGADO').sort((a, b) => b.number - a.number);
+  $('open-count').textContent = open.length;
+  $('collapsed-open-count').textContent = open.length;
+  document.body.dataset.queueEmpty = String(open.length === 0);
+  $('queue-items').innerHTML = open.length ? open.map(order => `<div class="queue-tile"><button type="button" class="queue-open" data-open-order="${escapeHTML(order.id)}" aria-label="Abrir pedido número ${order.number}">
+    ${queuePreview(order.items)}<span class="queue-data"><strong>N° ${order.number}</strong><small>${order.status}</small><b>${money(subtotal(order.items) + extrasTotal(order.extras))}</b></span>
+  </button><button type="button" class="queue-delete" data-delete-order="${escapeHTML(order.id)}" aria-label="Eliminar pedido número ${order.number}">×</button></div>`).join('') : '<p class="queue-empty">Aún no hay pedidos abiertos.</p>';
+}
+function queuePreview(items) {
+  const visible = items.slice(0, items.length > 4 ? 3 : 4);
+  const remaining = items.length - visible.length;
+  return `<span class="queue-preview" aria-label="${items.length} ítems">${visible.map(item => `<span class="queue-thumb" title="${escapeHTML(item.name)}">${imageMarkup(item.image, item.name)}</span>`).join('')}${remaining ? `<span class="queue-more" aria-label="${remaining} ítems más">+${remaining}<small>ítems</small></span>` : ''}</span>`;
+}
+function setQueueCollapsed(collapsed, moveFocus = false) {
+  queueCollapsed = collapsed;
+  document.body.classList.toggle('queue-collapsed', collapsed);
+  $('order-queue').hidden = collapsed;
+  $('show-queue').hidden = !collapsed;
+  $('hide-queue').setAttribute('aria-expanded', String(!collapsed));
+  $('show-queue').setAttribute('aria-expanded', String(!collapsed));
+  saveQueueCollapsed(collapsed);
+  if (moveFocus) $(collapsed ? 'show-queue' : 'hide-queue').focus();
+}
+function renderAll() { renderDraft(); renderQueue(); renderSales(); }
+function openDialog(dialog) { if (!dialog.open) dialog.showModal(); }
+function closeDialog(dialog) { if (dialog.open) dialog.close(); }
+
+function selectField(label, group, index, chosen = '') {
+  const source = group === 'drink' ? DRINKS : SNACKS;
+  return `<label class="choice-field">${escapeHTML(label)}<select data-choice="${group}" data-index="${index}" required><option value="">Elige una opción</option>${source.map(item => `<option value="${item.id}" ${chosen === item.id ? 'selected' : ''}>${escapeHTML(item.name)} · ${money(item.price)}</option>`).join('')}</select></label>`;
+}
+function openBuilder(product, line = null) {
+  builderProduct = product; editingLineUid = line?.uid || null;
+  $('builder-title').textContent = product.name;
+  $('builder-note').textContent = product.note || 'Elige la preparación';
+  $('builder-price').textContent = money(product.price);
+  $('builder-add').textContent = line ? 'Guardar cambios' : 'Agregar al pedido';
+  const requirements = product.requirements || {};
+  let fields = '';
+  if (requirements.drink) fields += `<div class="choice-group"><h3>Bebidas incluidas <span>${requirements.drink}</span></h3>${Array.from({ length: requirements.drink }, (_, i) => selectField(`Bebida ${i + 1}`, 'drink', i, line?.selections?.drinks?.[i])).join('')}</div>`;
+  if (requirements.snack) fields += `<div class="choice-group"><h3>Snacks incluidos <span>${requirements.snack}</span></h3>${Array.from({ length: requirements.snack }, (_, i) => selectField(`Snack ${i + 1}`, 'snack', i, line?.selections?.snacks?.[i])).join('')}</div>`;
+  if (requirements.tender || product.kind === 'tender') fields += `<div class="choice-group"><h3>Preparación de tenders</h3><label class="choice-field">Sabor<select data-choice="tender" required><option value="">Elige una opción</option>${['Naturales', 'BBQ', 'Búfalo'].map(flavor => `<option value="${flavor}" ${line?.selections?.tenderFlavor === flavor ? 'selected' : ''}>${flavor}</option>`).join('')}</select></label></div>`;
+  $('builder-fields').innerHTML = fields + '<div id="builder-breakdown" class="builder-breakdown"></div>';
+  updateBuilder(); openDialog($('builder-dialog'));
+}
+function builderSelections() {
+  const selects = [...$('builder-fields').querySelectorAll('select')];
+  if (selects.some(select => !select.value)) return null;
+  return {
+    drinks: selects.filter(select => select.dataset.choice === 'drink').map(select => select.value),
+    snacks: selects.filter(select => select.dataset.choice === 'snack').map(select => select.value),
+    tenderFlavor: selects.find(select => select.dataset.choice === 'tender')?.value
+  };
+}
+function updateBuilder() {
+  const choices = builderSelections();
+  $('builder-add').disabled = !choices;
+  if (!choices) { $('builder-breakdown').innerHTML = '<p>Completa las elecciones para ver el desglose.</p>'; return; }
+  try {
+    const preview = buildLine(builderProduct, choices);
+    $('builder-breakdown').innerHTML = `<strong>Desglose incluido</strong>${componentBreakdown(preview)}<div class="preview-total"><span>Precio del combo</span><b>${money(preview.price)}</b></div>`;
+  } catch { $('builder-add').disabled = true; }
+}
+function addProduct(id) {
+  const product = findProduct(id);
+  if (!product) return;
+  if (product.kind === 'combo' || product.kind === 'tender') { openBuilder(product); return; }
+  state.draft.items.push(buildLine(product)); persist(); renderDraft(); flash(`${product.name} agregado`);
+}
+function activeOrder() { return state.orders.find(order => order.id === activeOrderId); }
+function renderOrder() {
+  const order = reviewingDraft ? state.draft : activeOrder();
+  if (!order || !order.items.length) { closeDialog($('order-dialog')); return; }
+  $('order-title').textContent = reviewingDraft ? 'Revisar pedido' : `Pedido N° ${order.number}`;
+  $('order-status').textContent = reviewingDraft ? 'POR CONFIRMAR' : order.status;
+  $('order-status').dataset.status = reviewingDraft ? 'BORRADOR' : order.status;
+  $('order-created').textContent = reviewingDraft ? 'Comprueba los productos y el total antes de confirmar.' : displayDate(order.createdAt);
+  $('order-item-count').textContent = `${order.items.length} ${order.items.length === 1 ? 'producto' : 'productos'}`;
+  $('order-gallery').innerHTML = order.items.map(line => `<figure class="order-gallery-item" role="listitem">${imageMarkup(line.image, line.name)}<figcaption>${escapeHTML(line.name)}</figcaption></figure>`).join('');
+  $('order-lines').innerHTML = order.items.map(line => `<div class="order-line"><div class="order-line-top"><strong>${escapeHTML(line.name)}</strong><b>${money(line.price)}</b></div>${componentBreakdown(line)}</div>`).join('');
+  $('order-extras').innerHTML = order.extras.length ? order.extras.map(extra => `<div class="extra-row"><span>${escapeHTML(extra.description)}</span><b>${money(extra.amount)}</b>${order.status !== 'PAGADO' ? `<button type="button" data-remove-extra="${extra.uid}" data-target="${reviewingDraft ? 'review' : 'order'}" aria-label="Quitar extra ${escapeHTML(extra.description)}">×</button>` : ''}</div>`).join('') : '<p class="muted">Sin extras.</p>';
+  $('order-subtotal').textContent = money(subtotal(order.items));
+  $('order-extras-total').textContent = money(extrasTotal(order.extras));
+  $('order-total').textContent = money(subtotal(order.items) + extrasTotal(order.extras));
+  $('confirm-order').hidden = !reviewingDraft;
+  $('mark-ready').hidden = reviewingDraft || order.status !== 'ABIERTO';
+  $('mark-paid').hidden = reviewingDraft || order.status === 'PAGADO';
+  $('order-add-extra').hidden = order.status === 'PAGADO';
+}
+function openOrder(id) { reviewingDraft = false; activeOrderId = id; renderOrder(); if (activeOrder()) { closeDialog($('history-dialog')); openDialog($('order-dialog')); } }
+function renderHistory() {
+  const orders = [...state.orders].sort((a, b) => b.number - a.number);
+  $('history-list').innerHTML = orders.length ? orders.map(order => `<button type="button" data-open-order="${escapeHTML(order.id)}"><span><strong>Pedido N° ${order.number}</strong><small>${displayDate(order.createdAt)}</small></span><span><span class="status-badge" data-status="${order.status}">${order.status}</span><b>${money(subtotal(order.items) + extrasTotal(order.extras))}</b></span></button>`).join('') : '<p class="empty-state">Aún no hay pedidos en el historial.</p>';
+}
+function startExtra(target) {
+  extraTarget = target; $('extra-form').reset();
+  if (target !== 'draft') closeDialog($('order-dialog'));
+  openDialog($('extra-dialog')); $('extra-form').elements.amount.focus();
+}
+
+document.addEventListener('click', event => {
+  const button = event.target.closest('button'); if (!button) return;
+  if (button.dataset.product) addProduct(button.dataset.product);
+  if (button.dataset.filter) {
+    filter = button.dataset.filter;
+    document.querySelectorAll('[data-filter]').forEach(item => item.classList.toggle('active', item === button));
+    renderCatalog();
+  }
+  if (button.dataset.removeLine) { state.draft.items = state.draft.items.filter(line => line.uid !== button.dataset.removeLine); persist(); renderDraft(); }
+  if (button.dataset.duplicateLine) {
+    const line = state.draft.items.find(item => item.uid === button.dataset.duplicateLine);
+    if (line) { state.draft.items.push({ ...structuredClone(line), uid: createId() }); persist(); renderDraft(); }
+  }
+  if (button.dataset.editLine) {
+    const line = state.draft.items.find(item => item.uid === button.dataset.editLine);
+    if (line) openBuilder(findProduct(line.productId), line);
+  }
+  if (button.dataset.removeExtra) {
+    const list = button.dataset.target === 'order' ? activeOrder()?.extras : state.draft.extras;
+    if (list) { const i = list.findIndex(extra => extra.uid === button.dataset.removeExtra); if (i >= 0) list.splice(i, 1); persist(); renderDraft(); renderOrder(); }
+  }
+  if (button.dataset.openOrder) openOrder(button.dataset.openOrder);
+  if (button.dataset.deleteOrder) {
+    const order = state.orders.find(item => item.id === button.dataset.deleteOrder);
+    if (order && confirm(`¿Eliminar el pedido N° ${order.number}?`)) {
+      state.orders = state.orders.filter(item => item.id !== order.id); persist(); renderAll(); flash(`Pedido N° ${order.number} eliminado`);
+    }
+  }
+  if (button.hasAttribute('data-close-dialog')) closeDialog(button.closest('dialog'));
+});
+
+document.querySelectorAll('dialog').forEach(dialog => dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); }));
+$('search').addEventListener('input', renderCatalog);
+$('hide-queue').addEventListener('click', () => setQueueCollapsed(true, true));
+$('show-queue').addEventListener('click', () => setQueueCollapsed(false, true));
+$('builder-fields').addEventListener('change', updateBuilder);
+$('builder-add').addEventListener('click', () => {
+  try {
+    const line = buildLine(builderProduct, builderSelections());
+    if (editingLineUid) {
+      const index = state.draft.items.findIndex(item => item.uid === editingLineUid);
+      if (index >= 0) { line.uid = editingLineUid; state.draft.items[index] = line; }
+    } else state.draft.items.push(line);
+    persist(); renderDraft(); closeDialog($('builder-dialog')); flash(`${line.name} agregado`);
+  } catch (error) { flash(error.message); }
+});
+$('add-extra').addEventListener('click', () => startExtra('draft'));
+$('order-add-extra').addEventListener('click', () => startExtra(reviewingDraft ? 'review' : 'order'));
+$('extra-form').addEventListener('submit', event => {
+  event.preventDefault();
+  const form = event.currentTarget, amount = Number(form.elements.amount.value), description = form.elements.description.value.trim();
+  if (!Number.isFinite(amount) || amount <= 0 || !description) return;
+  const extra = { uid: createId(), amount: Math.round(amount * 100) / 100, description };
+  const order = extraTarget === 'order' ? activeOrder() : null;
+  if (extraTarget === 'order' && (!order || order.status === 'PAGADO')) return;
+  (order ? order.extras : state.draft.extras).push(extra);
+  persist(); renderAll(); closeDialog($('extra-dialog'));
+  if (extraTarget !== 'draft') { renderOrder(); openDialog($('order-dialog')); }
+  flash('Extra agregado');
+});
+$('extra-dialog').addEventListener('close', () => {
+  if (extraTarget !== 'draft' && (reviewingDraft || activeOrder()) && !$('order-dialog').open) {
+    renderOrder(); openDialog($('order-dialog'));
+  }
+});
+$('create-order').addEventListener('click', () => {
+  if (!state.draft.items.length) return;
+  reviewingDraft = true; activeOrderId = null;
+  renderOrder(); openDialog($('order-dialog'));
+});
+$('confirm-order').addEventListener('click', () => {
+  if (!reviewingDraft || !state.draft.items.length) return;
+  const number = state.nextNumber++;
+  const order = { id: createId(), number, status: 'ABIERTO', createdAt: new Date().toISOString(), paidAt: null, items: state.draft.items, extras: state.draft.extras };
+  state.orders.push(order); state.draft = { items: [], extras: [] };
+  reviewingDraft = false;
+  persist(); renderAll(); closeDialog($('order-dialog')); flash(`Pedido N° ${number} confirmado`);
+});
+$('mark-ready').addEventListener('click', () => {
+  const order = activeOrder(); if (!order || order.status !== 'ABIERTO') return;
+  order.status = 'LISTO'; persist(); renderAll(); renderOrder(); flash(`Pedido N° ${order.number} listo`);
+});
+$('mark-paid').addEventListener('click', () => {
+  const order = activeOrder(); if (!order || order.status === 'PAGADO') return;
+  order.status = 'PAGADO'; order.paidAt = new Date().toISOString();
+  persist(); renderAll(); renderOrder(); flash(`Pedido N° ${order.number} pagado`);
+});
+$('history-button').addEventListener('click', () => { renderHistory(); openDialog($('history-dialog')); });
+$('options-button').addEventListener('click', () => openDialog($('options-dialog')));
+$('save-file').addEventListener('click', () => exportJSON(state));
+$('open-file').addEventListener('click', () => $('file-input').click());
+$('export-json').addEventListener('click', () => exportJSON(state));
+$('export-csv').addEventListener('click', () => exportExcelCSV(state));
+$('import-file').addEventListener('click', () => $('file-input').click());
+$('file-input').addEventListener('change', async event => {
+  const file = event.target.files?.[0]; if (!file) return;
+  try {
+    const incoming = await importExpediente(file);
+    if (!confirm(`Abrir este expediente reemplazará los ${state.orders.length} pedidos guardados en este navegador. ¿Continuar?`)) return;
+    Object.assign(state, incoming); persist(); renderAll(); closeDialog($('options-dialog')); flash('Expediente cargado');
+  } catch (error) { flash(`No se pudo abrir: ${error.message}`); }
+  finally { event.target.value = ''; }
+});
+
+const today = new Date();
+$('today').textContent = new Intl.DateTimeFormat('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(today);
+$('header-date').textContent = new Intl.DateTimeFormat('es-MX', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(today);
+renderCatalog(); renderAll(); setQueueCollapsed(queueCollapsed);
+
+})();
