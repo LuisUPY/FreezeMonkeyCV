@@ -1,3 +1,5 @@
+OLDDDD:
+
 // Scripts clásicos para permitir abrir index.html directamente desde file://.
 globalThis.FreezeMonkeyMenu = (() => {
 'use strict';
@@ -44,6 +46,11 @@ const TENDER = {
   price: 70, image: image('snack-monkey-tenders')
 };
 
+const BONELESS_FLAVORS = ['Naturales', 'BBQ', 'Búfalo'];
+const BONELESS = {
+  id: 'snack-monkey-boneless', name: 'Boneless', category: 'snacks', kind: 'boneless',
+  price: 100, image: image('snack-monkey-boneless')
+};
 const COMBOS = [
   { id: 'combo-viral', name: 'Combo Viral', category: 'combos', kind: 'combo', price: 95, image: image('combo-viral'), requirements: { drink: 1, snack: 1 }, note: '1 bebida + 1 snack' },
   { id: 'combo-ozaru', name: 'Combo Ozaru', category: 'combos', kind: 'combo', price: 180, image: image('combo-ozaru'), requirements: { drink: 2, snack: 2 }, note: '2 bebidas + 2 snacks' },
@@ -54,12 +61,12 @@ const COMBOS = [
 const CAJA = { id: 'caja-salvaje', name: 'Caja Salvaje', category: 'snacks', kind: 'product', price: 179, image: image('caja-salvaje') };
 
 // Combos intercalados para que estén visibles durante el recorrido del catálogo.
-const byId = new Map([...DRINKS, ...SNACKS, TENDER, ...COMBOS, CAJA].map(product => [product.id, product]));
+const byId = new Map([...DRINKS, ...SNACKS, TENDER, BONELESS, ...COMBOS, CAJA].map(product => [product.id, product]));
 const order = [
   'combo-viral', 'frappe-albino-kong', 'smoothie-fresa', 'snack-papas-francesas',
   'combo-ozaru', 'frappe-dk-oreo', 'smoothie-mango', 'snack-dedos-de-queso',
   'combo-manada', 'frappe-kranfiky', 'smoothie-sandia', 'snack-aros-de-cebolla',
-  'combo-tenders', 'snack-monkey-tenders', 'frappe-lotus-de-george', 'smoothie-pina',
+  'combo-tenders', 'snack-monkey-tenders', 'snack-monkey-boneless', 'frappe-lotus-de-george', 'smoothie-pina',
   'caja-salvaje', 'frappe-mandril-mamut', 'smoothie-fresa-salvaje', 'snack-papas-gajo',
   'frappe-mojo-choco', 'smoothie-mango-salvaje', 'snack-salchipulpos',
   'frappe-mono-capuccino', 'smoothie-mono-sandillero', 'limonada-fresa', 'limonada-azul',
