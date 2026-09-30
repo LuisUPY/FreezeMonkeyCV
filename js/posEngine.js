@@ -144,6 +144,7 @@ function renderOrder() {
   $('order-status').dataset.status = reviewingDraft ? 'BORRADOR' : order.status;
   $('order-created').textContent = reviewingDraft ? 'Comprueba los productos y el total antes de confirmar.' : displayDate(order.createdAt);
   $('order-item-count').textContent = `${order.items.length} ${order.items.length === 1 ? 'producto' : 'productos'}`;
+  $('order-gallery').dataset.density = order.items.length > 4 ? 'dense' : 'normal';
   $('order-gallery').innerHTML = order.items.map(line => `<figure class="order-gallery-item" role="listitem">${imageMarkup(line.image, line.name)}<figcaption>${escapeHTML(line.name)}</figcaption></figure>`).join('');
   $('order-lines').innerHTML = order.items.map(line => `<div class="order-line"><div class="order-line-top"><strong>${escapeHTML(line.name)}</strong><b>${money(line.price)}</b></div>${componentBreakdown(line)}</div>`).join('');
   $('order-extras').innerHTML = order.extras.length ? order.extras.map(extra => `<div class="extra-row"><span>${escapeHTML(extra.description)}</span><b>${money(extra.amount)}</b>${order.status !== 'PAGADO' ? `<button type="button" data-remove-extra="${extra.uid}" data-target="${reviewingDraft ? 'review' : 'order'}" aria-label="Quitar extra ${escapeHTML(extra.description)}">×</button>` : ''}</div>`).join('') : '<p class="muted">Sin extras.</p>';

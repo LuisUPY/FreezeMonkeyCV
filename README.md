@@ -6,7 +6,7 @@ Punto de venta local hecho con HTML, CSS, Tailwind CDN y JavaScript ES6+. Todos 
 
 Abre `index.html` con doble clic en tu navegador. El catálogo, las fechas y todas las acciones se cargan desde scripts locales, compatibles con `file://`, sin instalar nada ni iniciar un servidor. Conserva las carpetas `js`, `css` y `assets` junto al archivo HTML.
 
-También puedes ejecutar `python3 -m http.server 8000` desde `freeze-monkey-pos/` y abrir `http://localhost:8000`. En GitHub Pages, publica esta carpeta como raíz del sitio o cópiala a la raíz de la rama publicada. Tailwind y la fuente Inter usan CDN; su disponibilidad no impide iniciar el POS y el CSS local mantiene la interfaz utilizable sin ellos.
+También puedes ejecutar `python3 -m http.server 8000` desde la raíz de `FreezeMonkeyCV/` y abrir `http://localhost:8000`. En GitHub Pages, publica la raíz del repositorio. Tailwind y la fuente Inter usan CDN; su disponibilidad no impide iniciar el POS y el CSS local mantiene la interfaz utilizable sin ellos.
 
 Los datos se guardan por navegador y ubicación: si pasas de `file://` a `localhost` o GitHub Pages, exporta el expediente JSON desde la ubicación anterior e impórtalo en la nueva.
 
