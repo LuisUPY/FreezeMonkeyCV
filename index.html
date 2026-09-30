@@ -10,10 +10,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./css/styles.css">
-  <script src="./js/menuData.js" defer></script>
-  <script src="./js/storage.js" defer></script>
-  <script src="./js/posEngine.js" defer></script>
+  <link rel="stylesheet" href="./css/styles.css?v=20260930-2">
+  <script src="./js/menuData.js?v=20260930-2" defer></script>
+  <script src="./js/storage.js?v=20260930-2" defer></script>
+  <script src="./js/posEngine.js?v=20260930-2" defer></script>
 </head>
 <body>
   <header class="topbar">
@@ -49,6 +49,7 @@
     <aside class="side-panel" aria-label="Pedido actual y ventas del día">
       <section class="draft-section" aria-labelledby="draft-title">
         <div class="section-title"><div><p class="eyebrow">EN PREPARACIÓN</p><h2 id="draft-title">Pedido actual</h2></div><span id="draft-count" class="count-pill">0</span></div>
+        <label class="order-label-field" for="draft-label">Etiqueta del pedido <small>(opcional)</small><input id="draft-label" type="text" maxlength="60" placeholder="Ej. A domicilio · Ana" autocomplete="off"></label>
         <div id="draft-items" class="draft-items"></div>
         <div class="extra-box">
           <div class="extra-heading"><strong>Extras</strong><button id="add-extra" type="button" class="text-button">+ Agregar</button></div>
@@ -86,7 +87,7 @@
 
   <dialog id="order-dialog" class="modal order-modal" aria-labelledby="order-title">
     <div class="modal-head"><div><p class="eyebrow">DESGLOSE DE PEDIDO</p><h2 id="order-title"></h2><span id="order-status" class="status-badge"></span></div><button type="button" class="icon-close red-close" data-close-dialog aria-label="Cerrar">×</button></div>
-    <div class="order-modal-body"><div class="order-visual"><strong id="order-item-count" class="order-item-count"></strong><div id="order-gallery" class="order-gallery" role="list" aria-label="Productos del pedido"></div><span id="order-created"></span></div><div class="order-detail"><div class="order-detail-scroll"><div id="order-lines"></div><div class="order-extras-head"><strong>Extras</strong><button id="order-add-extra" type="button" class="text-button">+ Agregar</button></div><div id="order-extras"></div></div><div class="order-totals"><div><span>Subtotal</span><span id="order-subtotal"></span></div><div><span>Extras</span><span id="order-extras-total"></span></div><div class="grand-total"><span>TOTAL</span><strong id="order-total"></strong></div></div></div></div>
+    <div class="order-modal-body"><div class="order-visual"><strong id="order-item-count" class="order-item-count"></strong><div id="order-gallery" class="order-gallery" role="list" aria-label="Productos del pedido"></div><span id="order-created"></span></div><div class="order-detail"><div class="order-detail-scroll"><label class="order-label-field" for="order-label">Etiqueta del pedido <small>(opcional)</small><input id="order-label" type="text" maxlength="60" placeholder="Ej. A domicilio · Ana" autocomplete="off"></label><div id="order-lines"></div><div class="order-extras-head"><strong>Extras</strong><button id="order-add-extra" type="button" class="text-button">+ Agregar</button></div><div id="order-extras"></div></div><div class="order-totals"><div><span>Subtotal</span><span id="order-subtotal"></span></div><div><span>Extras</span><span id="order-extras-total"></span></div><div class="grand-total"><span>TOTAL</span><strong id="order-total"></strong></div></div></div></div>
     <div class="order-actions"><button id="confirm-order" type="button" class="primary-button" hidden>Confirmar pedido</button><button id="mark-ready" type="button" class="ready-button">PEDIDO LISTO</button><button id="mark-paid" type="button" class="paid-button">PEDIDO PAGADO</button></div>
   </dialog>
 
@@ -96,7 +97,11 @@
   </dialog>
 
   <dialog id="history-dialog" class="modal history-modal" aria-labelledby="history-title"><div class="modal-head"><div><p class="eyebrow">EXPEDIENTE LOCAL</p><h2 id="history-title">Historial de pedidos</h2></div><button type="button" class="icon-close" data-close-dialog aria-label="Cerrar">×</button></div><div id="history-list" class="history-list"></div></dialog>
-  <dialog id="options-dialog" class="modal small-modal" aria-labelledby="options-title"><div class="modal-head"><div><p class="eyebrow">DATOS LOCALES</p><h2 id="options-title">Opciones</h2></div><button type="button" class="icon-close" data-close-dialog aria-label="Cerrar">×</button></div><div class="option-list"><button id="export-json" type="button">Guardar expediente JSON <span>↓</span></button><button id="export-csv" type="button">Exportar para Excel (CSV) <span>↓</span></button><button id="import-file" type="button">Abrir expediente JSON / CSV <span>↗</span></button></div><p class="option-note">Los datos permanecen en este navegador. Guarda un expediente para tener una copia de respaldo.</p></dialog>
+  <dialog id="options-dialog" class="modal small-modal" aria-labelledby="options-title"><div class="modal-head"><div><p class="eyebrow">DATOS LOCALES</p><h2 id="options-title">Opciones</h2></div><button type="button" class="icon-close" data-close-dialog aria-label="Cerrar">×</button></div><div class="option-list"><button id="export-json" type="button">Guardar expediente JSON <span>↓</span></button><button id="export-csv" type="button">Exportar para Excel (CSV) <span>↓</span></button><button id="import-file" type="button">Abrir expediente JSON / CSV <span>↗</span></button><button id="reset-day" type="button" class="danger-button">Reiniciar datos para un nuevo día <span>↻</span></button></div><p class="option-note">Los datos permanecen en este navegador. Guarda un expediente para tener una copia de respaldo.</p></dialog>
+  <dialog id="reset-dialog" class="modal small-modal" aria-labelledby="reset-title" aria-describedby="reset-description">
+    <div class="modal-head"><h2 id="reset-title">¿Reiniciar el programa?</h2><button type="button" class="icon-close" data-close-dialog aria-label="Cerrar">×</button></div>
+    <div class="reset-content"><p id="reset-description">Se eliminarán todos los pedidos, las ventas y el historial guardados en este navegador, además del pedido actual. La numeración volverá a 1.</p><p>Guarda un expediente si quieres conservar estos datos antes de comenzar un nuevo día.</p><button id="backup-before-reset" type="button" class="text-button">Guardar expediente JSON</button><div class="reset-actions"><button type="button" class="secondary-button" data-close-dialog autofocus>Cancelar</button><button id="confirm-reset" type="button" class="danger-button">Sí, reiniciar datos</button></div></div>
+  </dialog>
   <input id="file-input" type="file" accept=".json,.csv,application/json,text/csv" hidden>
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 </body>

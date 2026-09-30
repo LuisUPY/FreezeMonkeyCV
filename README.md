@@ -13,12 +13,14 @@ Los datos se guardan por navegador y ubicación: si pasas de `file://` a `localh
 ## Operación
 
 1. Toca un producto. Los productos individuales entran directamente al pedido actual; combos y tenders abren un selector sin salir del menú.
-2. Agrega extras con monto positivo y concepto. Se suman al subtotal en tiempo real.
+2. Escribe una **etiqueta opcional** (hasta 60 caracteres), por ejemplo «A domicilio · Ana» o «Mesa 2». Puedes editarla desde el desglose mientras el pedido no esté pagado; aparece en la cola y el historial y se conserva en los expedientes JSON/CSV. Agrega extras con monto positivo y concepto. Se suman al subtotal en tiempo real.
 3. Pulsa **Crear pedido** para revisar todos los productos, extras y el total. Esta pantalla muestra una galería completa y únicamente el botón **Confirmar pedido**. Hasta confirmarlo, puedes cerrar la revisión y seguir editando el pedido actual. Al confirmar, se asigna un número correlativo persistente y estado `ABIERTO`.
 4. Abre la miniatura en la cola inferior para ver el desglose y añadir o quitar extras. `PEDIDO LISTO` cambia el estado a `LISTO`; `PEDIDO PAGADO` registra la fecha de pago, cierra la cola y actualiza **Ventas del día**.
 5. La X roja elimina un pedido abierto tras confirmar. El número correlativo no se reutiliza.
 6. **Historial** muestra los pedidos guardados, incluidos los pagados. **Guardar expediente** descarga JSON. **Opciones** permite descargar JSON, exportar CSV compatible con Excel e importar un expediente JSON o CSV generado por este POS. La importación reemplaza los datos locales tras confirmar.
 7. La cola inferior es compacta. Cada pedido muestra hasta 4 miniaturas; a partir de 5 ítems, muestra 3 miniaturas y `+N` con la cantidad restante. El botón de flecha hacia abajo oculta la barra y deja una pestaña **Pedidos** para volver a mostrarla. El navegador recuerda esa preferencia.
+
+**Opciones → Reiniciar datos para un nuevo día** abre una confirmación con opción de guardar un expediente JSON antes de continuar. Al confirmar, elimina todos los pedidos, ventas, historial y borrador de este navegador y devuelve la numeración a 1. Cancelar conserva los datos. Los expedientes descargados y el catálogo no se modifican.
 
 Los datos quedan en `localStorage` de este navegador y origen. Guarda copias JSON periódicas; no hay sincronización entre dispositivos ni integración con una terminal de cobro. El botón `PEDIDO PAGADO` registra un pago indicado por el operador.
 
@@ -75,3 +77,9 @@ La tipografía es Inter con fallback del sistema; sus cifras y rótulos mantiene
 ## Publicación
 
 El sitio no tiene backend y puede servirse como archivos estáticos. Antes de usarlo en producción, confirma que el alojamiento elegido permite el uso comercial previsto y que los equipos de caja cuentan con respaldos periódicos. Los datos guardados en un navegador no aparecerán en otro.
+
+## Comprobaciones de regresión
+
+Con Node.js y Playwright (WebKit y Chromium) instalados, ejecuta `node tests/pos-regression.cjs`. Usa navegadores aislados sin tocar los datos de caja. Comprueba el modal con 1, 3, 9 y 24 productos en cinco tamaños, incluyendo teléfono vertical y horizontal; etiquetas, persistencia, expedientes actuales/anteriores y confirmación/cancelación del reinicio. El servidor de prueba se inicia y cierra automáticamente. Si Playwright está en otra carpeta, indica su directorio de paquetes con `NODE_PATH`.
+
+El diálogo de pedido tiene altura explícita y zonas desplazables para evitar la compresión del contenido en WebKit. En móvil, galería y desglose se recorren verticalmente. Las referencias a CSS/JS llevan una versión para solicitar los parches nuevos al publicar en GitHub Pages.
