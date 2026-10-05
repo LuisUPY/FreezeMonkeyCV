@@ -54,7 +54,7 @@ const BONELESS = {
 const COMBOS = [
   { id: 'combo-viral', name: 'Combo Viral', category: 'combos', kind: 'combo', price: 95, image: image('combo-viral'), requirements: { drink: 1, snack: 1 }, note: '1 bebida + 1 snack' },
   { id: 'combo-ozaru', name: 'Combo Ozaru', category: 'combos', kind: 'combo', price: 180, image: image('combo-ozaru'), requirements: { drink: 2, snack: 2 }, note: '2 bebidas + 2 snacks' },
-  { id: 'combo-manada', name: 'Combo Manada', category: 'combos', kind: 'combo', price: 289, image: image('combo-manada'), requirements: { drink: 2 }, included: [{ name: 'Platón de snacks', price: 169 }], note: 'Platón de snacks + 2 bebidas' },
+  { id: 'combo-manada', name: 'Combo Manada', category: 'combos', kind: 'combo', price: 289, image: image('combo-manada'), requirements: { drink: 2 }, included: [{ id: 'caja-salvaje', name: 'Caja Salvaje', category: 'snacks', price: 179 }], note: '2 bebidas + 1 Caja Salvaje' },
   { id: 'combo-tenders', name: 'Combo Tender', category: 'combos', kind: 'combo', price: 120, image: image('combo-tenders'), requirements: { drink: 1, tender: 1 }, note: 'Tenders + 1 bebida' }
 ];
 
@@ -107,5 +107,70 @@ function buildLine(product, selections = {}) {
 
 const money = value => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(value);
 
-return { DRINKS, SNACKS, TENDER_FLAVORS, TENDER, COMBOS, CAJA, MENU, findProduct, buildLine, money, createId };
+function combineAutomaticCombos(items) {
+  // Solo se desarman combos automáticos; los elegidos desde el selector se conservan.
+  const previous = new Map();
+  const keyFor = lines => lines.map(line => line.uid).sort().join('|');
+  const validSources = line => line.automaticCombo && Array.isArray(line.sourceItems) && line.sourceItems.length &&
+    line.sourceItems.every(item => item && typeof item.uid === 'string' && typeof item.name === 'string' &&
+      Number.isFinite(item.price) && Array.isArray(item.components) && !item.components.length);
+  const flat = items.flatMap(line => {
+    if (!validSources(line)) return [line];
+    previous.set(`${line.productId}:${keyFor(line.sourceItems)}`, line);
+    return line.sourceItems;
+  });
+  const pools = { drink: [], snack: [], tender: [], box: [] };
+  flat.forEach((line, index) => {
+    const product = findProduct(line.productId);
+    if (!product || line.components.length || line.price !== product.price) return;
+    const kind = product.id === CAJA.id ? 'box' : product.kind;
+    if (kind === 'tender' && !TENDER_FLAVORS.includes(line.selections?.tenderFlavor)) return;
+    if (pools[kind]) pools[kind].push({ line, index });
+  });
+  // Los dedos de queso pueden ahorrar más; se usan primero sin cambiar su precio individual.
+  pools.snack.sort((a, b) => b.line.price - a.line.price || a.index - b.index);
+  const snackTotals = [0];
+  pools.snack.forEach(entry => snackTotals.push(snackTotals.at(-1) + entry.line.price));
+  let best = { saving: 0, snacks: 0, tenders: 0, boxes: 0 };
+  for (let snacks = 0; snacks <= Math.min(pools.drink.length, pools.snack.length); snacks++) {
+    const tenders = Math.min(pools.tender.length, pools.drink.length - snacks);
+    const boxes = Math.min(pools.box.length, Math.floor((pools.drink.length - snacks - tenders) / 2));
+    // Ozaru cuesta menos que dos Viral. Tender ahorra lo mismo que Manada usando una bebida menos.
+    const comboPrice = Math.floor(snacks / 2) * findProduct('combo-ozaru').price + (snacks % 2) * findProduct('combo-viral').price;
+    const saving = snacks * DRINKS[0].price + snackTotals[snacks] - comboPrice +
+      tenders * (DRINKS[0].price + TENDER.price - findProduct('combo-tenders').price) +
+      boxes * (2 * DRINKS[0].price + CAJA.price - findProduct('combo-manada').price);
+    if (saving > best.saving || saving === best.saving && snacks > best.snacks) best = { saving, snacks, tenders, boxes };
+  }
+  const used = new Set(), grouped = [];
+  let drinkIndex = 0, snackIndex = 0;
+  const addCombo = (id, entries) => {
+    const sourceItems = entries.map(entry => entry.line);
+    const selections = {
+      drinks: sourceItems.filter(line => findProduct(line.productId).kind === 'drink').map(line => line.productId),
+      snacks: sourceItems.filter(line => findProduct(line.productId).kind === 'snack').map(line => line.productId),
+      tenderFlavor: sourceItems.find(line => line.productId === TENDER.id)?.selections.tenderFlavor
+    };
+    const combo = previous.get(`${id}:${keyFor(sourceItems)}`) || {
+      ...buildLine(findProduct(id), selections), automaticCombo: true, sourceItems
+    };
+    entries.forEach(entry => used.add(entry.index));
+    grouped.push({ index: Math.min(...entries.map(entry => entry.index)), line: combo });
+  };
+  for (let i = 0; i < Math.floor(best.snacks / 2); i++) {
+    addCombo('combo-ozaru', [...pools.drink.slice(drinkIndex, drinkIndex + 2), ...pools.snack.slice(snackIndex, snackIndex + 2)]);
+    drinkIndex += 2; snackIndex += 2;
+  }
+  if (best.snacks % 2) addCombo('combo-viral', [pools.drink[drinkIndex++], pools.snack[snackIndex++]]);
+  for (let i = 0; i < best.tenders; i++) addCombo('combo-tenders', [pools.drink[drinkIndex++], pools.tender[i]]);
+  for (let i = 0; i < best.boxes; i++) {
+    addCombo('combo-manada', [...pools.drink.slice(drinkIndex, drinkIndex + 2), pools.box[i]]);
+    drinkIndex += 2;
+  }
+  flat.forEach((line, index) => { if (!used.has(index)) grouped.push({ index, line }); });
+  const result = grouped.sort((a, b) => a.index - b.index).map(entry => entry.line);
+  return result.length === items.length && result.every((line, index) => line === items[index]) ? items : result;
+}
+
+return { DRINKS, SNACKS, TENDER_FLAVORS, TENDER, COMBOS, CAJA, MENU, findProduct, buildLine, combineAutomaticCombos, money, createId };
 })();

@@ -10,10 +10,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./css/styles.css?v=20260930-2">
-  <script src="./js/menuData.js?v=20260930-2" defer></script>
+  <link rel="stylesheet" href="./css/styles.css?v=20261005-1">
+  <script src="./js/menuData.js?v=20261005-2" defer></script>
   <script src="./js/storage.js?v=20260930-2" defer></script>
-  <script src="./js/posEngine.js?v=20260930-2" defer></script>
+  <script src="./js/posEngine.js?v=20261005-2" defer></script>
 </head>
 <body>
   <header class="topbar">
@@ -96,7 +96,32 @@
     <form id="extra-form"><label>Monto Extra ($)<input name="amount" type="number" min="0.01" step="0.01" inputmode="decimal" required placeholder="15.00"></label><label>Concepto / Descripción<input name="description" type="text" maxlength="100" required placeholder="Extra crema whipped"></label><button type="submit" class="primary-button">Agregar extra</button></form>
   </dialog>
 
-  <dialog id="history-dialog" class="modal history-modal" aria-labelledby="history-title"><div class="modal-head"><div><p class="eyebrow">EXPEDIENTE LOCAL</p><h2 id="history-title">Historial de pedidos</h2></div><button type="button" class="icon-close" data-close-dialog aria-label="Cerrar">×</button></div><div id="history-list" class="history-list"></div></dialog>
+  <dialog id="history-dialog" class="modal history-modal" aria-labelledby="history-title">
+    <div class="modal-head">
+      <div><p class="eyebrow">EXPEDIENTE LOCAL</p><h2 id="history-title">Historial de pedidos</h2></div>
+      <button type="button" class="icon-close" data-close-dialog aria-label="Cerrar">×</button>
+    </div>
+    <div id="history-layout" class="history-layout">
+      <aside class="history-sidebar" aria-labelledby="history-days-title">
+        <h3 id="history-days-title">Días registrados</h3>
+        <div id="history-days" class="history-days" role="group" aria-labelledby="history-days-title"></div>
+      </aside>
+      <section id="history-detail" class="history-detail" aria-labelledby="history-day-title" tabindex="0">
+        <div class="history-day-heading">
+          <p class="eyebrow">CORTE DEL DÍA</p>
+          <h3 id="history-day-title" aria-live="polite" aria-atomic="true"></h3>
+          <p id="history-day-meta"></p>
+        </div>
+        <p class="history-note">Ventas y productos: solo PAGADOS, por fecha local de pago. Los pendientes se muestran por fecha de creación.</p>
+        <dl id="history-summary" class="history-summary" aria-label="Ventas y productos del día"></dl>
+        <p class="history-note">Los combos cuentan sus productos incluidos; cada Caja Salvaje cuenta como un producto.</p>
+        <p id="history-uncategorized" class="history-note" hidden></p>
+        <div class="history-orders-heading"><h3>Pedidos del día</h3><span id="history-order-count"></span></div>
+        <div id="history-list" class="history-list"></div>
+      </section>
+    </div>
+    <p id="history-empty" class="empty-state" hidden>Aún no hay pedidos en el historial.</p>
+  </dialog>
   <dialog id="options-dialog" class="modal small-modal" aria-labelledby="options-title"><div class="modal-head"><div><p class="eyebrow">DATOS LOCALES</p><h2 id="options-title">Opciones</h2></div><button type="button" class="icon-close" data-close-dialog aria-label="Cerrar">×</button></div><div class="option-list"><button id="export-json" type="button">Guardar expediente JSON <span>↓</span></button><button id="export-csv" type="button">Exportar para Excel (CSV) <span>↓</span></button><button id="import-file" type="button">Abrir expediente JSON / CSV <span>↗</span></button><button id="reset-day" type="button" class="danger-button">Reiniciar datos para un nuevo día <span>↻</span></button></div><p class="option-note">Los datos permanecen en este navegador. Guarda un expediente para tener una copia de respaldo.</p></dialog>
   <dialog id="reset-dialog" class="modal small-modal" aria-labelledby="reset-title" aria-describedby="reset-description">
     <div class="modal-head"><h2 id="reset-title">¿Reiniciar el programa?</h2><button type="button" class="icon-close" data-close-dialog aria-label="Cerrar">×</button></div>

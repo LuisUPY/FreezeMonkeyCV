@@ -1,7 +1,7 @@
 (() => {
 'use strict';
 
-const { MENU, DRINKS, SNACKS, findProduct, buildLine, money, createId } = globalThis.FreezeMonkeyMenu;
+const { MENU, DRINKS, SNACKS, findProduct, buildLine, combineAutomaticCombos, money, createId } = globalThis.FreezeMonkeyMenu;
 const { emptyState, loadState, saveState, exportJSON, exportExcelCSV, importExpediente, localDate, loadQueueCollapsed, saveQueueCollapsed } = globalThis.FreezeMonkeyStorage;
 
 const $ = id => document.getElementById(id);
@@ -15,12 +15,20 @@ let reviewingDraft = false;
 let extraTarget = 'draft';
 let toastTimer;
 let queueCollapsed = loadQueueCollapsed();
+let selectedHistoryDay = null;
+let renderedHistoryDays = '';
+const historyCategories = { frappes: 'Frappés', smoothies: 'Smoothies', limonadas: 'Limonadas', snacks: 'Snacks' };
+const historyDayFormatter = new Intl.DateTimeFormat('es-MX', { day: '2-digit', month: 'short', year: 'numeric' });
 
 function flash(message) {
   $('toast').textContent = message; $('toast').hidden = false;
   clearTimeout(toastTimer); toastTimer = setTimeout(() => $('toast').hidden = true, 3400);
 }
 function persist() { if (!saveState(state)) flash('No se pudo guardar en este navegador. Exporta un expediente.'); }
+function updateDraftItems() {
+  state.draft.items = combineAutomaticCombos(state.draft.items);
+  persist(); renderDraft();
+}
 function subtotal(items) { return items.reduce((sum, item) => sum + item.price, 0); }
 function extrasTotal(extras) { return extras.reduce((sum, extra) => sum + extra.amount, 0); }
 function displayDate(iso) { return new Intl.DateTimeFormat('es-MX', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(iso)); }
@@ -71,9 +79,13 @@ function renderQueue() {
   $('open-count').textContent = open.length;
   $('collapsed-open-count').textContent = open.length;
   document.body.dataset.queueEmpty = String(open.length === 0);
-  $('queue-items').innerHTML = open.length ? open.map(order => `<div class="queue-tile"><button type="button" class="queue-open" data-open-order="${escapeHTML(order.id)}" aria-label="Abrir pedido número ${order.number}${order.label ? `, ${escapeHTML(order.label)}` : ''}">
-    ${queuePreview(order.items)}<span class="queue-data"><strong>N° ${order.number}</strong>${order.label ? `<span class="queue-label" title="${escapeHTML(order.label)}">${escapeHTML(order.label)}</span>` : ''}<small>${order.status}</small><b>${money(subtotal(order.items) + extrasTotal(order.extras))}</b></span>
-  </button><button type="button" class="queue-delete" data-delete-order="${escapeHTML(order.id)}" aria-label="Eliminar pedido número ${order.number}">×</button></div>`).join('') : '<p class="queue-empty">Aún no hay pedidos abiertos.</p>';
+  $('queue-items').innerHTML = open.length ? open.map(order => orderCardMarkup(order, true)).join('') : '<p class="queue-empty">Aún no hay pedidos abiertos.</p>';
+}
+// La cola y el historial comparten el mismo marcado y los mismos estilos de tarjeta.
+function orderCardMarkup(order, allowDelete = false) {
+  return `<div class="queue-tile"><button type="button" class="queue-open" data-open-order="${escapeHTML(order.id)}" aria-label="Abrir pedido número ${order.number}${order.label ? `, ${escapeHTML(order.label)}` : ''}">
+    ${queuePreview(order.items)}<span class="queue-data"><strong>N° ${order.number}</strong>${order.label ? `<span class="queue-label${allowDelete ? '' : ' history-label'}" title="${escapeHTML(order.label)}">${escapeHTML(order.label)}</span>` : ''}<small data-status="${escapeHTML(order.status)}">${escapeHTML(order.status)}</small><b>${money(subtotal(order.items) + extrasTotal(order.extras))}</b></span>
+  </button>${allowDelete ? `<button type="button" class="queue-delete" data-delete-order="${escapeHTML(order.id)}" aria-label="Eliminar pedido número ${order.number}">×</button>` : ''}</div>`;
 }
 function queuePreview(items) {
   const visible = items.slice(0, items.length > 4 ? 3 : 4);
@@ -90,7 +102,7 @@ function setQueueCollapsed(collapsed, moveFocus = false) {
   saveQueueCollapsed(collapsed);
   if (moveFocus) $(collapsed ? 'show-queue' : 'hide-queue').focus();
 }
-function renderAll() { renderDraft(); renderQueue(); renderSales(); }
+function renderAll() { renderDraft(); renderQueue(); renderSales(); if ($('history-dialog').open) renderHistory(); }
 function openDialog(dialog) { if (!dialog.open) dialog.showModal(); }
 function closeDialog(dialog) { if (dialog.open) dialog.close(); }
 
@@ -134,7 +146,7 @@ function addProduct(id) {
   const product = findProduct(id);
   if (!product) return;
   if (product.kind === 'combo' || product.kind === 'tender') { openBuilder(product); return; }
-  state.draft.items.push(buildLine(product)); persist(); renderDraft(); flash(`${product.name} agregado`);
+  state.draft.items.push(buildLine(product)); updateDraftItems(); flash(`${product.name} agregado`);
 }
 function activeOrder() { return state.orders.find(order => order.id === activeOrderId); }
 function renderOrder() {
@@ -160,9 +172,88 @@ function renderOrder() {
   $('order-add-extra').hidden = order.status === 'PAGADO';
 }
 function openOrder(id) { reviewingDraft = false; activeOrderId = id; renderOrder(); if (activeOrder()) { closeDialog($('history-dialog')); openDialog($('order-dialog')); } }
-function renderHistory() {
-  const orders = [...state.orders].sort((a, b) => b.number - a.number);
-  $('history-list').innerHTML = orders.length ? orders.map(order => `<button type="button" data-open-order="${escapeHTML(order.id)}"><span><strong>Pedido N° ${order.number}</strong>${order.label ? `<span class="history-label">${escapeHTML(order.label)}</span>` : ''}<small>${displayDate(order.createdAt)}</small></span><span><span class="status-badge" data-status="${order.status}">${order.status}</span><b>${money(subtotal(order.items) + extrasTotal(order.extras))}</b></span></button>`).join('') : '<p class="empty-state">Aún no hay pedidos en el historial.</p>';
+function historyOrderDate(order) {
+  // Los expedientes anteriores sin paidAt usan la fecha de creación como respaldo.
+  return new Date(order.status === 'PAGADO' && order.paidAt ? order.paidAt : order.createdAt);
+}
+function productCategory(item, parentProduct = null) {
+  const product = findProduct(item.productId || item.id) || MENU.find(product => product.name === item.name);
+  // Los componentes antiguos del platón no guardaban id ni categoría.
+  const included = parentProduct?.included?.find(part => part.name === item.name);
+  if (parentProduct?.id === 'combo-manada' && item.name === 'Platón de snacks') return 'snacks';
+  return product?.category || item.category || included?.category;
+}
+function summarizeHistoryDay(orders) {
+  const summary = { total: 0, paidCount: 0, products: 0, categories: { frappes: 0, smoothies: 0, limonadas: 0, snacks: 0 }, uncategorized: 0 };
+  for (const order of orders) {
+    if (order.status !== 'PAGADO') continue;
+    summary.paidCount++;
+    summary.total += subtotal(order.items) + extrasTotal(order.extras);
+    for (const line of order.items) {
+      const parentProduct = findProduct(line.productId) || MENU.find(product => product.name === line.name);
+      // Un combo se cuenta por sus componentes, sin sumar también el combo padre.
+      const products = line.components.length ? line.components : [line];
+      for (const item of products) {
+        const category = productCategory(item, parentProduct);
+        summary.products++;
+        if (Object.hasOwn(summary.categories, category)) summary.categories[category]++;
+        else summary.uncategorized++;
+      }
+    }
+  }
+  return summary;
+}
+function groupOrdersByDay(orders) {
+  const groups = new Map();
+  for (const order of orders) {
+    const date = localDate(historyOrderDate(order));
+    if (!groups.has(date)) groups.set(date, { date, orders: [] });
+    groups.get(date).orders.push(order);
+  }
+  return [...groups.values()].sort((a, b) => b.date.localeCompare(a.date)).map(day => ({
+    ...day,
+    orders: day.orders.sort((a, b) => historyOrderDate(b) - historyOrderDate(a) || b.number - a.number),
+    summary: summarizeHistoryDay(day.orders)
+  }));
+}
+function historyDayLabel(date) {
+  // Constructor local: evita el cambio de día de new Date('YYYY-MM-DD') en México.
+  const [year, month, day] = date.split('-').map(Number);
+  return historyDayFormatter.format(new Date(year, month - 1, day, 12));
+}
+function renderHistory(date = selectedHistoryDay) {
+  const days = groupOrdersByDay(state.orders);
+  const selected = days.find(day => day.date === date) || days[0];
+  selectedHistoryDay = selected?.date || null;
+  $('history-layout').hidden = !selected;
+  $('history-empty').hidden = !!selected;
+  // Mantener los botones existentes conserva el foco y el scroll al cambiar de día.
+  const dayMarkup = days.map(day => `<button type="button" class="history-day" data-history-day="${day.date}" aria-controls="history-detail">
+    <time datetime="${day.date}">${historyDayLabel(day.date)}</time>
+    <span>${money(day.summary.total)} · ${day.summary.paidCount} ${day.summary.paidCount === 1 ? 'venta pagada' : 'ventas pagadas'}</span>
+    <small>${day.orders.length} ${day.orders.length === 1 ? 'pedido' : 'pedidos'}</small>
+  </button>`).join('');
+  if (renderedHistoryDays !== dayMarkup) {
+    $('history-days').innerHTML = dayMarkup;
+    renderedHistoryDays = dayMarkup;
+  }
+  $('history-days').querySelectorAll('[data-history-day]').forEach(button => {
+    const active = button.dataset.historyDay === selectedHistoryDay;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', String(active));
+  });
+  if (!selected) { $('history-summary').innerHTML = ''; $('history-list').innerHTML = ''; return; }
+  const { summary } = selected;
+  const pending = selected.orders.length - summary.paidCount;
+  $('history-day-title').textContent = historyDayLabel(selected.date);
+  $('history-day-meta').textContent = `${summary.paidCount} ${summary.paidCount === 1 ? 'venta pagada' : 'ventas pagadas'} · ${pending} ${pending === 1 ? 'pedido pendiente' : 'pedidos pendientes'}`;
+  $('history-summary').innerHTML = `<div class="history-kpi history-kpi--main"><dt>Total de ventas</dt><dd>${money(summary.total)}</dd></div>
+    <div class="history-kpi history-kpi--main"><dt>Productos vendidos</dt><dd>${summary.products}</dd></div>
+    ${Object.entries(historyCategories).map(([category, label]) => `<div class="history-kpi"><dt>${label}</dt><dd>${summary.categories[category]}</dd></div>`).join('')}`;
+  $('history-uncategorized').hidden = !summary.uncategorized;
+  $('history-uncategorized').textContent = `${summary.uncategorized} ${summary.uncategorized === 1 ? 'producto sin categoría identificada' : 'productos sin categoría identificada'} en el expediente.`;
+  $('history-order-count').textContent = selected.orders.length;
+  $('history-list').innerHTML = selected.orders.map(order => orderCardMarkup(order)).join('');
 }
 function startExtra(target) {
   extraTarget = target; $('extra-form').reset();
@@ -178,10 +269,14 @@ document.addEventListener('click', event => {
     document.querySelectorAll('[data-filter]').forEach(item => item.classList.toggle('active', item === button));
     renderCatalog();
   }
-  if (button.dataset.removeLine) { state.draft.items = state.draft.items.filter(line => line.uid !== button.dataset.removeLine); persist(); renderDraft(); }
+  if (button.dataset.removeLine) { state.draft.items = state.draft.items.filter(line => line.uid !== button.dataset.removeLine); updateDraftItems(); }
   if (button.dataset.duplicateLine) {
     const line = state.draft.items.find(item => item.uid === button.dataset.duplicateLine);
-    if (line) { state.draft.items.push({ ...structuredClone(line), uid: createId() }); persist(); renderDraft(); }
+    if (line) {
+      const copy = { ...structuredClone(line), uid: createId() };
+      if (copy.automaticCombo && Array.isArray(copy.sourceItems)) copy.sourceItems.forEach(item => { item.uid = createId(); });
+      state.draft.items.push(copy); updateDraftItems();
+    }
   }
   if (button.dataset.editLine) {
     const line = state.draft.items.find(item => item.uid === button.dataset.editLine);
@@ -192,6 +287,11 @@ document.addEventListener('click', event => {
     if (list) { const i = list.findIndex(extra => extra.uid === button.dataset.removeExtra); if (i >= 0) list.splice(i, 1); persist(); renderDraft(); renderOrder(); }
   }
   if (button.dataset.openOrder) openOrder(button.dataset.openOrder);
+  if (button.dataset.historyDay) {
+    selectedHistoryDay = button.dataset.historyDay;
+    renderHistory();
+    $('history-detail').scrollTop = 0;
+  }
   if (button.dataset.deleteOrder) {
     const order = state.orders.find(item => item.id === button.dataset.deleteOrder);
     if (order && confirm(`¿Eliminar el pedido N° ${order.number}?`)) {
@@ -224,7 +324,7 @@ $('builder-add').addEventListener('click', () => {
       const index = state.draft.items.findIndex(item => item.uid === editingLineUid);
       if (index >= 0) { line.uid = editingLineUid; state.draft.items[index] = line; }
     } else state.draft.items.push(line);
-    persist(); renderDraft(); closeDialog($('builder-dialog')); flash(`${line.name} agregado`);
+    updateDraftItems(); closeDialog($('builder-dialog')); flash(`${line.name} agregado`);
   } catch (error) { flash(error.message); }
 });
 $('add-extra').addEventListener('click', () => startExtra('draft'));
@@ -248,6 +348,7 @@ $('extra-dialog').addEventListener('close', () => {
 });
 $('create-order').addEventListener('click', () => {
   if (!state.draft.items.length) return;
+  updateDraftItems();
   reviewingDraft = true; activeOrderId = null;
   renderOrder(); openDialog($('order-dialog'));
 });
@@ -268,7 +369,10 @@ $('mark-paid').addEventListener('click', () => {
   order.status = 'PAGADO'; order.paidAt = new Date().toISOString();
   persist(); renderAll(); renderOrder(); flash(`Pedido N° ${order.number} pagado`);
 });
-$('history-button').addEventListener('click', () => { renderHistory(); openDialog($('history-dialog')); });
+$('history-button').addEventListener('click', () => {
+  renderHistory(); openDialog($('history-dialog'));
+  $('history-days').querySelector('.active')?.scrollIntoView({ block: 'nearest' });
+});
 $('options-button').addEventListener('click', () => openDialog($('options-dialog')));
 $('reset-day').addEventListener('click', () => {
   closeDialog($('options-dialog')); openDialog($('reset-dialog'));
@@ -278,7 +382,7 @@ $('confirm-reset').addEventListener('click', () => {
   const fresh = emptyState();
   if (!saveState(fresh)) { flash('No se pudo reiniciar. Los datos actuales se conservan.'); return; }
   Object.assign(state, fresh);
-  activeOrderId = null; reviewingDraft = false; builderProduct = null; editingLineUid = null; extraTarget = 'draft';
+  activeOrderId = null; reviewingDraft = false; builderProduct = null; editingLineUid = null; extraTarget = 'draft'; selectedHistoryDay = null;
   filter = 'todos'; $('search').value = '';
   document.querySelectorAll('[data-filter]').forEach(button => button.classList.toggle('active', button.dataset.filter === filter));
   document.querySelectorAll('dialog[open]').forEach(closeDialog);
@@ -294,7 +398,7 @@ $('file-input').addEventListener('change', async event => {
   try {
     const incoming = await importExpediente(file);
     if (!confirm(`Abrir este expediente reemplazará los ${state.orders.length} pedidos guardados en este navegador. ¿Continuar?`)) return;
-    Object.assign(state, incoming); persist(); renderAll(); closeDialog($('options-dialog')); flash('Expediente cargado');
+    Object.assign(state, incoming); state.draft.items = combineAutomaticCombos(state.draft.items); selectedHistoryDay = null; persist(); renderAll(); closeDialog($('options-dialog')); flash('Expediente cargado');
   } catch (error) { flash(`No se pudo abrir: ${error.message}`); }
   finally { event.target.value = ''; }
 });
@@ -304,6 +408,8 @@ const today = new Date();
 $('today').textContent = new Intl.DateTimeFormat('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(today);
 $('header-date').textContent = new Intl.DateTimeFormat('es-MX', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(today);
 }
+const combinedDraft = combineAutomaticCombos(state.draft.items);
+if (combinedDraft !== state.draft.items) { state.draft.items = combinedDraft; persist(); }
 renderDate(); renderCatalog(); renderAll(); setQueueCollapsed(queueCollapsed);
 
 })();
