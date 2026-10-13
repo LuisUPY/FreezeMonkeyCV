@@ -1,0 +1,1202 @@
+{
+  "Bebidas": {
+    "Frappés": [
+      {
+        "id": "frappe-albino-kong",
+        "nombre": "Frappé Albino Kong",
+        "precio": 60,
+        "descripcion": "Bebida fría a tu elección.",
+        "imagen": "./assets/img/productos/frappe-albino-kong.webp",
+        "tipo": "drink",
+        "opciones": []
+      },
+      {
+        "id": "frappe-dk-oreo",
+        "nombre": "Frappé DK Oreo",
+        "precio": 60,
+        "descripcion": "Bebida fría a tu elección.",
+        "imagen": "./assets/img/productos/frappe-dk-oreo.webp",
+        "tipo": "drink",
+        "opciones": []
+      },
+      {
+        "id": "frappe-kranfiky",
+        "nombre": "Frappé Kranfiky",
+        "precio": 60,
+        "descripcion": "Bebida fría a tu elección.",
+        "imagen": "./assets/img/productos/frappe-kranfiky.webp",
+        "tipo": "drink",
+        "opciones": []
+      },
+      {
+        "id": "frappe-lotus-de-george",
+        "nombre": "Frappé El Lotus de George",
+        "precio": 60,
+        "descripcion": "Bebida fría a tu elección.",
+        "imagen": "./assets/img/productos/frappe-lotus-de-george.webp",
+        "tipo": "drink",
+        "opciones": []
+      },
+      {
+        "id": "frappe-mandril-mamut",
+        "nombre": "Frappé Mandril Mamut",
+        "precio": 60,
+        "descripcion": "Bebida fría a tu elección.",
+        "imagen": "./assets/img/productos/frappe-mandril-mamut.webp",
+        "tipo": "drink",
+        "opciones": []
+      },
+      {
+        "id": "frappe-mojo-choco",
+        "nombre": "Frappé Mojo Choco",
+        "precio": 60,
+        "descripcion": "Bebida fría a tu elección.",
+        "imagen": "./assets/img/productos/frappe-mojo-choco.webp",
+        "tipo": "drink",
+        "opciones": []
+      },
+      {
+        "id": "frappe-mono-capuccino",
+        "nombre": "Frappé Mono Capuccino",
+        "precio": 60,
+        "descripcion": "Bebida fría a tu elección.",
+        "imagen": "./assets/img/productos/frappe-mono-capuccino.webp",
+        "tipo": "drink",
+        "opciones": []
+      },
+      {
+        "id": "frappe-mono-real",
+        "nombre": "Frappé Mono Real",
+        "precio": 60,
+        "descripcion": "Bebida fría a tu elección.",
+        "imagen": "./assets/img/productos/frappe-mono-real.webp",
+        "tipo": "drink",
+        "opciones": []
+      }
+    ],
+    "Smoothies": [
+      {
+        "id": "smoothie-fresa",
+        "nombre": "Smoothie Fresa",
+        "precio": 60,
+        "descripcion": "Bebida fría a tu elección.",
+        "imagen": "./assets/img/productos/smoothie-fresa.webp",
+        "tipo": "drink",
+        "opciones": []
+      },
+      {
+        "id": "smoothie-fresa-salvaje",
+        "nombre": "Smoothie Fresa Salvaje",
+        "precio": 60,
+        "descripcion": "Bebida fría a tu elección.",
+        "imagen": "./assets/img/productos/smoothie-fresa-salvaje.webp",
+        "tipo": "drink",
+        "opciones": []
+      },
+      {
+        "id": "smoothie-mango",
+        "nombre": "Smoothie Mango",
+        "precio": 60,
+        "descripcion": "Bebida fría a tu elección.",
+        "imagen": "./assets/img/productos/smoothie-mango.webp",
+        "tipo": "drink",
+        "opciones": []
+      },
+      {
+        "id": "smoothie-mango-salvaje",
+        "nombre": "Smoothie Mango Salvaje",
+        "precio": 60,
+        "descripcion": "Bebida fría a tu elección.",
+        "imagen": "./assets/img/productos/smoothie-mango-salvaje.webp",
+        "tipo": "drink",
+        "opciones": []
+      },
+      {
+        "id": "smoothie-mono-sandillero",
+        "nombre": "Smoothie Mono Sandillero",
+        "precio": 60,
+        "descripcion": "Bebida fría a tu elección.",
+        "imagen": "./assets/img/productos/smoothie-mono-sandillero.webp",
+        "tipo": "drink",
+        "opciones": []
+      },
+      {
+        "id": "smoothie-pina",
+        "nombre": "Smoothie Piña",
+        "precio": 60,
+        "descripcion": "Bebida fría a tu elección.",
+        "imagen": "./assets/img/productos/smoothie-pina.webp",
+        "tipo": "drink",
+        "opciones": []
+      },
+      {
+        "id": "smoothie-pina-tropical",
+        "nombre": "Smoothie Piña Tropical",
+        "precio": 60,
+        "descripcion": "Bebida fría a tu elección.",
+        "imagen": "./assets/img/productos/smoothie-pina-tropical.webp",
+        "tipo": "drink",
+        "opciones": []
+      },
+      {
+        "id": "smoothie-sandia",
+        "nombre": "Smoothie Sandía",
+        "precio": 60,
+        "descripcion": "Bebida fría a tu elección.",
+        "imagen": "./assets/img/productos/smoothie-sandia.webp",
+        "tipo": "drink",
+        "opciones": []
+      }
+    ],
+    "Limonadas": [
+      {
+        "id": "limonada-fresa",
+        "nombre": "Limonada de Fresa",
+        "precio": 60,
+        "descripcion": "Bebida fría a tu elección.",
+        "imagen": null,
+        "tipo": "drink",
+        "opciones": []
+      },
+      {
+        "id": "limonada-azul",
+        "nombre": "Limonada Azul",
+        "precio": 60,
+        "descripcion": "Bebida fría a tu elección.",
+        "imagen": null,
+        "tipo": "drink",
+        "opciones": []
+      }
+    ]
+  },
+  "Snacks": {
+    "Para picar": [
+      {
+        "id": "snack-papas-francesas",
+        "nombre": "Papas francesas",
+        "precio": 40,
+        "descripcion": "Recién preparado para acompañar tu bebida.",
+        "imagen": "./assets/img/productos/snack-papas-francesas.webp",
+        "tipo": "snack",
+        "opciones": []
+      },
+      {
+        "id": "snack-papas-gajo",
+        "nombre": "Papas gajo",
+        "precio": 40,
+        "descripcion": "Recién preparado para acompañar tu bebida.",
+        "imagen": "./assets/img/productos/snack-papas-gajo.webp",
+        "tipo": "snack",
+        "opciones": []
+      },
+      {
+        "id": "snack-aros-de-cebolla",
+        "nombre": "Aros de cebolla",
+        "precio": 40,
+        "descripcion": "Recién preparado para acompañar tu bebida.",
+        "imagen": "./assets/img/productos/snack-aros-de-cebolla.webp",
+        "tipo": "snack",
+        "opciones": []
+      },
+      {
+        "id": "snack-salchipulpos",
+        "nombre": "Salchipulpos",
+        "precio": 40,
+        "descripcion": "Recién preparado para acompañar tu bebida.",
+        "imagen": "./assets/img/productos/snack-salchipulpos.webp",
+        "tipo": "snack",
+        "opciones": []
+      },
+      {
+        "id": "snack-dedos-de-queso",
+        "nombre": "Dedos de queso",
+        "precio": 50,
+        "descripcion": "Recién preparado para acompañar tu bebida.",
+        "imagen": "./assets/img/productos/snack-dedos-de-queso.webp",
+        "tipo": "snack",
+        "opciones": []
+      }
+    ],
+    "Tenders y boneless": [
+      {
+        "id": "snack-monkey-tenders",
+        "nombre": "Tenders",
+        "precio": 70,
+        "descripcion": "Elige Naturales, BBQ o Búfalo.",
+        "imagen": "./assets/img/productos/snack-monkey-tenders.webp",
+        "tipo": "tender",
+        "opciones": [
+          {
+            "id": "sabor",
+            "nombre": "Sabor",
+            "tipo": "unica",
+            "requerido": true,
+            "valores": [
+              {
+                "id": "Naturales",
+                "nombre": "Naturales",
+                "precioExtra": 0
+              },
+              {
+                "id": "BBQ",
+                "nombre": "BBQ",
+                "precioExtra": 0
+              },
+              {
+                "id": "Búfalo",
+                "nombre": "Búfalo",
+                "precioExtra": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "snack-monkey-boneless",
+        "nombre": "Boneless",
+        "precio": 90,
+        "descripcion": "Elige Naturales, BBQ o Búfalo.",
+        "imagen": "./assets/img/productos/snack-monkey-boneless.webp",
+        "tipo": "boneless",
+        "opciones": [
+          {
+            "id": "sabor",
+            "nombre": "Sabor",
+            "tipo": "unica",
+            "requerido": true,
+            "valores": [
+              {
+                "id": "Naturales",
+                "nombre": "Naturales",
+                "precioExtra": 0
+              },
+              {
+                "id": "BBQ",
+                "nombre": "BBQ",
+                "precioExtra": 0
+              },
+              {
+                "id": "Búfalo",
+                "nombre": "Búfalo",
+                "precioExtra": 0
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "Caja Salvaje": [
+      {
+        "id": "caja-salvaje",
+        "nombre": "Caja Salvaje",
+        "precio": 179,
+        "descripcion": "La caja para compartir. También incluida en Combo Manada.",
+        "imagen": "./assets/img/productos/caja-salvaje.webp",
+        "tipo": "product",
+        "opciones": []
+      }
+    ]
+  },
+  "Combos": {
+    "A tu elección": [
+      {
+        "id": "combo-viral",
+        "nombre": "Combo Viral",
+        "precio": 95,
+        "descripcion": "1 bebida + 1 snack. Precio fijo con cualquier selección.",
+        "imagen": "./assets/img/productos/combo-viral.webp",
+        "tipo": "combo",
+        "opciones": [
+          {
+            "id": "bebida-1",
+            "nombre": "Bebida 1",
+            "tipo": "unica",
+            "requerido": true,
+            "valores": [
+              {
+                "id": "frappe-albino-kong",
+                "nombre": "Frappé Albino Kong",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-dk-oreo",
+                "nombre": "Frappé DK Oreo",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-kranfiky",
+                "nombre": "Frappé Kranfiky",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-lotus-de-george",
+                "nombre": "Frappé El Lotus de George",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-mandril-mamut",
+                "nombre": "Frappé Mandril Mamut",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-mojo-choco",
+                "nombre": "Frappé Mojo Choco",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-mono-capuccino",
+                "nombre": "Frappé Mono Capuccino",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-mono-real",
+                "nombre": "Frappé Mono Real",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-fresa",
+                "nombre": "Smoothie Fresa",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-fresa-salvaje",
+                "nombre": "Smoothie Fresa Salvaje",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-mango",
+                "nombre": "Smoothie Mango",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-mango-salvaje",
+                "nombre": "Smoothie Mango Salvaje",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-mono-sandillero",
+                "nombre": "Smoothie Mono Sandillero",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-pina",
+                "nombre": "Smoothie Piña",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-pina-tropical",
+                "nombre": "Smoothie Piña Tropical",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-sandia",
+                "nombre": "Smoothie Sandía",
+                "precioExtra": 0
+              },
+              {
+                "id": "limonada-fresa",
+                "nombre": "Limonada de Fresa",
+                "precioExtra": 0
+              },
+              {
+                "id": "limonada-azul",
+                "nombre": "Limonada Azul",
+                "precioExtra": 0
+              }
+            ]
+          },
+          {
+            "id": "snack-1",
+            "nombre": "Snack 1",
+            "tipo": "unica",
+            "requerido": true,
+            "valores": [
+              {
+                "id": "snack-papas-francesas",
+                "nombre": "Papas francesas",
+                "precioExtra": 0
+              },
+              {
+                "id": "snack-papas-gajo",
+                "nombre": "Papas gajo",
+                "precioExtra": 0
+              },
+              {
+                "id": "snack-aros-de-cebolla",
+                "nombre": "Aros de cebolla",
+                "precioExtra": 0
+              },
+              {
+                "id": "snack-salchipulpos",
+                "nombre": "Salchipulpos",
+                "precioExtra": 0
+              },
+              {
+                "id": "snack-dedos-de-queso",
+                "nombre": "Dedos de queso",
+                "precioExtra": 0
+              }
+            ]
+          }
+        ],
+        "componentesFijos": [],
+        "incluyeTenders": false,
+        "incluyeBoneless": false
+      },
+      {
+        "id": "combo-ozaru",
+        "nombre": "Combo Ozaru",
+        "precio": 180,
+        "descripcion": "2 bebidas + 2 snacks. Precio fijo con cualquier selección.",
+        "imagen": "./assets/img/productos/combo-ozaru.webp",
+        "tipo": "combo",
+        "opciones": [
+          {
+            "id": "bebida-1",
+            "nombre": "Bebida 1",
+            "tipo": "unica",
+            "requerido": true,
+            "valores": [
+              {
+                "id": "frappe-albino-kong",
+                "nombre": "Frappé Albino Kong",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-dk-oreo",
+                "nombre": "Frappé DK Oreo",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-kranfiky",
+                "nombre": "Frappé Kranfiky",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-lotus-de-george",
+                "nombre": "Frappé El Lotus de George",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-mandril-mamut",
+                "nombre": "Frappé Mandril Mamut",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-mojo-choco",
+                "nombre": "Frappé Mojo Choco",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-mono-capuccino",
+                "nombre": "Frappé Mono Capuccino",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-mono-real",
+                "nombre": "Frappé Mono Real",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-fresa",
+                "nombre": "Smoothie Fresa",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-fresa-salvaje",
+                "nombre": "Smoothie Fresa Salvaje",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-mango",
+                "nombre": "Smoothie Mango",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-mango-salvaje",
+                "nombre": "Smoothie Mango Salvaje",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-mono-sandillero",
+                "nombre": "Smoothie Mono Sandillero",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-pina",
+                "nombre": "Smoothie Piña",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-pina-tropical",
+                "nombre": "Smoothie Piña Tropical",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-sandia",
+                "nombre": "Smoothie Sandía",
+                "precioExtra": 0
+              },
+              {
+                "id": "limonada-fresa",
+                "nombre": "Limonada de Fresa",
+                "precioExtra": 0
+              },
+              {
+                "id": "limonada-azul",
+                "nombre": "Limonada Azul",
+                "precioExtra": 0
+              }
+            ]
+          },
+          {
+            "id": "bebida-2",
+            "nombre": "Bebida 2",
+            "tipo": "unica",
+            "requerido": true,
+            "valores": [
+              {
+                "id": "frappe-albino-kong",
+                "nombre": "Frappé Albino Kong",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-dk-oreo",
+                "nombre": "Frappé DK Oreo",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-kranfiky",
+                "nombre": "Frappé Kranfiky",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-lotus-de-george",
+                "nombre": "Frappé El Lotus de George",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-mandril-mamut",
+                "nombre": "Frappé Mandril Mamut",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-mojo-choco",
+                "nombre": "Frappé Mojo Choco",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-mono-capuccino",
+                "nombre": "Frappé Mono Capuccino",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-mono-real",
+                "nombre": "Frappé Mono Real",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-fresa",
+                "nombre": "Smoothie Fresa",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-fresa-salvaje",
+                "nombre": "Smoothie Fresa Salvaje",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-mango",
+                "nombre": "Smoothie Mango",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-mango-salvaje",
+                "nombre": "Smoothie Mango Salvaje",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-mono-sandillero",
+                "nombre": "Smoothie Mono Sandillero",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-pina",
+                "nombre": "Smoothie Piña",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-pina-tropical",
+                "nombre": "Smoothie Piña Tropical",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-sandia",
+                "nombre": "Smoothie Sandía",
+                "precioExtra": 0
+              },
+              {
+                "id": "limonada-fresa",
+                "nombre": "Limonada de Fresa",
+                "precioExtra": 0
+              },
+              {
+                "id": "limonada-azul",
+                "nombre": "Limonada Azul",
+                "precioExtra": 0
+              }
+            ]
+          },
+          {
+            "id": "snack-1",
+            "nombre": "Snack 1",
+            "tipo": "unica",
+            "requerido": true,
+            "valores": [
+              {
+                "id": "snack-papas-francesas",
+                "nombre": "Papas francesas",
+                "precioExtra": 0
+              },
+              {
+                "id": "snack-papas-gajo",
+                "nombre": "Papas gajo",
+                "precioExtra": 0
+              },
+              {
+                "id": "snack-aros-de-cebolla",
+                "nombre": "Aros de cebolla",
+                "precioExtra": 0
+              },
+              {
+                "id": "snack-salchipulpos",
+                "nombre": "Salchipulpos",
+                "precioExtra": 0
+              },
+              {
+                "id": "snack-dedos-de-queso",
+                "nombre": "Dedos de queso",
+                "precioExtra": 0
+              }
+            ]
+          },
+          {
+            "id": "snack-2",
+            "nombre": "Snack 2",
+            "tipo": "unica",
+            "requerido": true,
+            "valores": [
+              {
+                "id": "snack-papas-francesas",
+                "nombre": "Papas francesas",
+                "precioExtra": 0
+              },
+              {
+                "id": "snack-papas-gajo",
+                "nombre": "Papas gajo",
+                "precioExtra": 0
+              },
+              {
+                "id": "snack-aros-de-cebolla",
+                "nombre": "Aros de cebolla",
+                "precioExtra": 0
+              },
+              {
+                "id": "snack-salchipulpos",
+                "nombre": "Salchipulpos",
+                "precioExtra": 0
+              },
+              {
+                "id": "snack-dedos-de-queso",
+                "nombre": "Dedos de queso",
+                "precioExtra": 0
+              }
+            ]
+          }
+        ],
+        "componentesFijos": [],
+        "incluyeTenders": false,
+        "incluyeBoneless": false
+      },
+      {
+        "id": "combo-manada",
+        "nombre": "Combo Manada",
+        "precio": 289,
+        "descripcion": "2 bebidas + 1 Caja Salvaje. Precio fijo con cualquier selección.",
+        "imagen": "./assets/img/productos/combo-manada.webp",
+        "tipo": "combo",
+        "opciones": [
+          {
+            "id": "bebida-1",
+            "nombre": "Bebida 1",
+            "tipo": "unica",
+            "requerido": true,
+            "valores": [
+              {
+                "id": "frappe-albino-kong",
+                "nombre": "Frappé Albino Kong",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-dk-oreo",
+                "nombre": "Frappé DK Oreo",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-kranfiky",
+                "nombre": "Frappé Kranfiky",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-lotus-de-george",
+                "nombre": "Frappé El Lotus de George",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-mandril-mamut",
+                "nombre": "Frappé Mandril Mamut",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-mojo-choco",
+                "nombre": "Frappé Mojo Choco",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-mono-capuccino",
+                "nombre": "Frappé Mono Capuccino",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-mono-real",
+                "nombre": "Frappé Mono Real",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-fresa",
+                "nombre": "Smoothie Fresa",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-fresa-salvaje",
+                "nombre": "Smoothie Fresa Salvaje",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-mango",
+                "nombre": "Smoothie Mango",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-mango-salvaje",
+                "nombre": "Smoothie Mango Salvaje",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-mono-sandillero",
+                "nombre": "Smoothie Mono Sandillero",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-pina",
+                "nombre": "Smoothie Piña",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-pina-tropical",
+                "nombre": "Smoothie Piña Tropical",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-sandia",
+                "nombre": "Smoothie Sandía",
+                "precioExtra": 0
+              },
+              {
+                "id": "limonada-fresa",
+                "nombre": "Limonada de Fresa",
+                "precioExtra": 0
+              },
+              {
+                "id": "limonada-azul",
+                "nombre": "Limonada Azul",
+                "precioExtra": 0
+              }
+            ]
+          },
+          {
+            "id": "bebida-2",
+            "nombre": "Bebida 2",
+            "tipo": "unica",
+            "requerido": true,
+            "valores": [
+              {
+                "id": "frappe-albino-kong",
+                "nombre": "Frappé Albino Kong",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-dk-oreo",
+                "nombre": "Frappé DK Oreo",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-kranfiky",
+                "nombre": "Frappé Kranfiky",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-lotus-de-george",
+                "nombre": "Frappé El Lotus de George",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-mandril-mamut",
+                "nombre": "Frappé Mandril Mamut",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-mojo-choco",
+                "nombre": "Frappé Mojo Choco",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-mono-capuccino",
+                "nombre": "Frappé Mono Capuccino",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-mono-real",
+                "nombre": "Frappé Mono Real",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-fresa",
+                "nombre": "Smoothie Fresa",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-fresa-salvaje",
+                "nombre": "Smoothie Fresa Salvaje",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-mango",
+                "nombre": "Smoothie Mango",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-mango-salvaje",
+                "nombre": "Smoothie Mango Salvaje",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-mono-sandillero",
+                "nombre": "Smoothie Mono Sandillero",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-pina",
+                "nombre": "Smoothie Piña",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-pina-tropical",
+                "nombre": "Smoothie Piña Tropical",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-sandia",
+                "nombre": "Smoothie Sandía",
+                "precioExtra": 0
+              },
+              {
+                "id": "limonada-fresa",
+                "nombre": "Limonada de Fresa",
+                "precioExtra": 0
+              },
+              {
+                "id": "limonada-azul",
+                "nombre": "Limonada Azul",
+                "precioExtra": 0
+              }
+            ]
+          }
+        ],
+        "componentesFijos": [
+          "caja-salvaje"
+        ],
+        "incluyeTenders": false,
+        "incluyeBoneless": false
+      },
+      {
+        "id": "combo-tenders",
+        "nombre": "Combo Tender",
+        "precio": 120,
+        "descripcion": "Tenders + 1 bebida. Precio fijo con cualquier selección.",
+        "imagen": "./assets/img/productos/combo-tenders.webp",
+        "tipo": "combo",
+        "opciones": [
+          {
+            "id": "bebida-1",
+            "nombre": "Bebida 1",
+            "tipo": "unica",
+            "requerido": true,
+            "valores": [
+              {
+                "id": "frappe-albino-kong",
+                "nombre": "Frappé Albino Kong",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-dk-oreo",
+                "nombre": "Frappé DK Oreo",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-kranfiky",
+                "nombre": "Frappé Kranfiky",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-lotus-de-george",
+                "nombre": "Frappé El Lotus de George",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-mandril-mamut",
+                "nombre": "Frappé Mandril Mamut",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-mojo-choco",
+                "nombre": "Frappé Mojo Choco",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-mono-capuccino",
+                "nombre": "Frappé Mono Capuccino",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-mono-real",
+                "nombre": "Frappé Mono Real",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-fresa",
+                "nombre": "Smoothie Fresa",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-fresa-salvaje",
+                "nombre": "Smoothie Fresa Salvaje",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-mango",
+                "nombre": "Smoothie Mango",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-mango-salvaje",
+                "nombre": "Smoothie Mango Salvaje",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-mono-sandillero",
+                "nombre": "Smoothie Mono Sandillero",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-pina",
+                "nombre": "Smoothie Piña",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-pina-tropical",
+                "nombre": "Smoothie Piña Tropical",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-sandia",
+                "nombre": "Smoothie Sandía",
+                "precioExtra": 0
+              },
+              {
+                "id": "limonada-fresa",
+                "nombre": "Limonada de Fresa",
+                "precioExtra": 0
+              },
+              {
+                "id": "limonada-azul",
+                "nombre": "Limonada Azul",
+                "precioExtra": 0
+              }
+            ]
+          },
+          {
+            "id": "sabor",
+            "nombre": "Sabor",
+            "tipo": "unica",
+            "requerido": true,
+            "valores": [
+              {
+                "id": "Naturales",
+                "nombre": "Naturales",
+                "precioExtra": 0
+              },
+              {
+                "id": "BBQ",
+                "nombre": "BBQ",
+                "precioExtra": 0
+              },
+              {
+                "id": "Búfalo",
+                "nombre": "Búfalo",
+                "precioExtra": 0
+              }
+            ]
+          }
+        ],
+        "componentesFijos": [],
+        "incluyeTenders": true,
+        "incluyeBoneless": false
+      },
+      {
+        "id": "combo-boneless",
+        "nombre": "Combo Boneless",
+        "precio": 140,
+        "descripcion": "Boneless + 1 bebida de libre elección. Precio fijo con cualquier selección.",
+        "imagen": "./assets/img/productos/snack-monkey-boneless.webp",
+        "tipo": "combo",
+        "opciones": [
+          {
+            "id": "bebida-1",
+            "nombre": "Bebida 1",
+            "tipo": "unica",
+            "requerido": true,
+            "valores": [
+              {
+                "id": "frappe-albino-kong",
+                "nombre": "Frappé Albino Kong",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-dk-oreo",
+                "nombre": "Frappé DK Oreo",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-kranfiky",
+                "nombre": "Frappé Kranfiky",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-lotus-de-george",
+                "nombre": "Frappé El Lotus de George",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-mandril-mamut",
+                "nombre": "Frappé Mandril Mamut",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-mojo-choco",
+                "nombre": "Frappé Mojo Choco",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-mono-capuccino",
+                "nombre": "Frappé Mono Capuccino",
+                "precioExtra": 0
+              },
+              {
+                "id": "frappe-mono-real",
+                "nombre": "Frappé Mono Real",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-fresa",
+                "nombre": "Smoothie Fresa",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-fresa-salvaje",
+                "nombre": "Smoothie Fresa Salvaje",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-mango",
+                "nombre": "Smoothie Mango",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-mango-salvaje",
+                "nombre": "Smoothie Mango Salvaje",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-mono-sandillero",
+                "nombre": "Smoothie Mono Sandillero",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-pina",
+                "nombre": "Smoothie Piña",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-pina-tropical",
+                "nombre": "Smoothie Piña Tropical",
+                "precioExtra": 0
+              },
+              {
+                "id": "smoothie-sandia",
+                "nombre": "Smoothie Sandía",
+                "precioExtra": 0
+              },
+              {
+                "id": "limonada-fresa",
+                "nombre": "Limonada de Fresa",
+                "precioExtra": 0
+              },
+              {
+                "id": "limonada-azul",
+                "nombre": "Limonada Azul",
+                "precioExtra": 0
+              }
+            ]
+          },
+          {
+            "id": "sabor",
+            "nombre": "Sabor",
+            "tipo": "unica",
+            "requerido": true,
+            "valores": [
+              {
+                "id": "Naturales",
+                "nombre": "Naturales",
+                "precioExtra": 0
+              },
+              {
+                "id": "BBQ",
+                "nombre": "BBQ",
+                "precioExtra": 0
+              },
+              {
+                "id": "Búfalo",
+                "nombre": "Búfalo",
+                "precioExtra": 0
+              }
+            ]
+          }
+        ],
+        "componentesFijos": [],
+        "incluyeTenders": false,
+        "incluyeBoneless": true
+      }
+    ]
+  }
+}

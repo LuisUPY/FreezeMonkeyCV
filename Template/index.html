@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#183d32">
+  <meta name="description" content="Catálogo y pedidos de Amor & Amor Cafetería.">
+  <title>Amor & Amor · Punto de venta</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/pos-features.css">
+  <link rel="stylesheet" href="css/cash-print.css">
+  <script src="js/menuData.js" defer></script>
+  <script src="js/orderCore.js" defer></script>
+  <script src="js/orders.js" defer></script>
+  <script src="js/history.js" defer></script>
+  <script src="js/cash.js" defer></script>
+  <script src="js/storage.js" defer></script>
+  <script src="js/media.js" defer></script>
+  <script src="js/salesUI.js" defer></script>
+  <script src="js/cashUI.js" defer></script>
+  <script src="js/printing.js" defer></script>
+  <script src="js/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="Amor y Amor, inicio"><img src="assets/img/logo.png" alt="Amor & Amor Cafetería" width="180" height="72"></a>
+    <div class="header-cash">
+      <p id="cash-status" role="status">Caja cerrada · Abre un turno para cobrar</p>
+      <button id="history-button" class="header-history" type="button">Historial</button>
+      <details id="cash-options" class="options-dropdown">
+        <summary>Ver opciones de caja</summary>
+        <nav class="options-panel" aria-label="Control de caja">
+          <button id="cash-open-button" type="button">Abrir caja</button>
+          <button id="cash-expense-button" type="button" disabled>Registrar gasto extra</button>
+          <button id="cash-tips-button" type="button" disabled>Propinas y reparto</button>
+          <button id="cash-close-button" type="button" disabled>Corte de caja</button>
+          <button id="cash-history-button" type="button">Cortes guardados</button>
+        </nav>
+      </details>
+    </div>
+    <details id="app-options" class="options-dropdown app-options">
+      <summary>Opciones</summary>
+      <nav class="options-panel" aria-label="Opciones de la aplicación">
+        <a href="assets/Menu%20Amor%20%26%20Amor.pdf" target="_blank" rel="noopener">Menú ↗</a>
+        <button id="load-expediente" type="button">Cargar expediente</button>
+        <button id="save-expediente" type="button">Guardar expediente</button>
+        <button id="restart-app" type="button">Reiniciar aplicación</button>
+      </nav>
+    </details>
+  </header>
+
+  <main class="workspace">
+    <section class="catalog" aria-labelledby="catalog-title">
+      <div class="catalog-heading">
+        <div><p class="eyebrow">AMOR & AMOR CAFETERÍA</p><h1 id="catalog-title">Un buen día empieza aquí.</h1><p class="heading-note">Elige, personaliza y prepara tu pedido.</p></div>
+        <div class="heading-art" aria-hidden="true"><img src="assets/img/hotcakes.png" alt="" width="175" height="135"><span>Hecho con amor</span></div>
+      </div>
+      <div id="macro-tabs" class="macro-tabs" role="tablist" aria-label="Categorías del menú"></div>
+      <section id="catalog-panel" role="tabpanel" aria-labelledby="tab-alimentos">
+        <div class="filter-row"><div id="subcategory-chips" class="subcategory-chips" role="group" aria-label="Subcategorías"></div></div>
+        <div class="catalog-toolbar">
+          <div><h2 id="section-title">Alimentos</h2><p id="product-count" class="muted" aria-live="polite"></p></div>
+          <label class="search-field"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 4.5 4.5"></path></svg><span class="sr-only">Buscar en todo el menú</span><input id="product-search" type="search" placeholder="Buscar en todo el menú…" autocomplete="off" aria-describedby="global-search-note"></label>
+        </div>
+        <p id="global-search-note" class="global-search-note" hidden>Resultados de todas las categorías. Borra la búsqueda para volver a los filtros.</p>
+        <div id="product-grid" class="product-grid"></div>
+        <div id="catalog-empty" class="catalog-empty" hidden><span aria-hidden="true">⌕</span><h3 id="catalog-empty-title">No encontramos productos</h3><p id="catalog-empty-note">Prueba con otro nombre.</p></div>
+        <p class="catalog-tip"><span aria-hidden="true">✧</span> Cada detalle cuenta. Los productos con opciones se personalizan antes de agregarlos.</p>
+      </section>
+    </section>
+
+    <aside id="order-panel" class="order-panel" aria-labelledby="order-title">
+      <div class="order-heading"><div><p class="eyebrow">TU SELECCIÓN</p><h2 id="order-title" tabindex="-1">Pedido actual</h2></div><span id="order-count" class="count-badge">0</span></div>
+      <div id="order-label-controls" class="order-label-controls">
+        <p id="label-presets-title" class="label-presets-title">Etiqueta del pedido <span class="muted">· opcional</span></p>
+        <div id="order-label-presets" class="label-presets" role="group" aria-labelledby="label-presets-title"></div>
+        <label class="order-label" for="order-label">Detalle personalizado <span class="muted">· opcional</span><input id="order-label" type="text" maxlength="60" placeholder="Nombre, dirección o detalle adicional" autocomplete="off"></label>
+      </div>
+      <div id="addition-notice" class="addition-notice" hidden><p id="addition-note"></p><button id="cancel-addition" type="button" class="text-button">Cancelar</button></div>
+      <div id="order-items" class="order-items" aria-label="Productos del pedido"></div>
+      <div class="order-bottom"><div class="draft-actions"><button id="add-extra" class="secondary-button" type="button">Añadir Extra +</button><button id="clear-order" class="text-button" type="button" disabled>Vaciar pedido</button></div><div class="order-total"><span id="order-total-label">Total</span><strong id="order-total">$0.00</strong></div><p class="total-note">Incluye los extras seleccionados</p><button id="review-order" class="primary-button" type="button" disabled>Crear pedido <span aria-hidden="true">→</span></button><p class="local-note"><span class="status-dot" aria-hidden="true"></span><span id="storage-status">Expediente guardado en este navegador</span></p></div>
+    </aside>
+  </main>
+  <button id="mobile-order-link" class="mobile-order-link" type="button" aria-controls="order-panel" hidden><span>Ver pedido <span id="mobile-order-count" class="mobile-count"></span></span><strong id="mobile-order-total"></strong><span aria-hidden="true">↓</span></button>
+  <footer class="page-footer"><span>Amor & Amor <span aria-hidden="true">♡</span></span><span>Buenos desayunos, buenos momentos.</span><span>Precios en MXN</span></footer>
+
+  <dialog id="modifier-dialog" class="modal" aria-labelledby="modifier-title" aria-describedby="modifier-description">
+    <form id="modifier-form" novalidate>
+      <div class="modal-heading"><div><p class="eyebrow">A TU GUSTO</p><h2 id="modifier-title"></h2></div><button class="close-button" type="button" data-close aria-label="Cerrar personalización">×</button></div>
+      <p id="modifier-description" class="modal-description"></p>
+      <div id="modifier-fields" class="modifier-fields"></div>
+      <label class="notes-field">Nota para cocina <span class="muted">· opcional</span><textarea id="modifier-note" maxlength="200" rows="2" placeholder="Algún detalle para preparar tu platillo…"></textarea></label>
+      <p id="modifier-error" class="form-error" role="alert" hidden></p>
+      <div class="modal-footer"><div><span class="muted">Precio por unidad</span><strong id="modifier-total"></strong></div><button class="primary-button" type="submit">Agregar al pedido <span aria-hidden="true">+</span></button></div>
+    </form>
+  </dialog>
+
+  <dialog id="review-dialog" class="modal review-modal" aria-labelledby="review-title">
+    <div class="modal-heading"><div><p class="eyebrow">TODO LISTO</p><h2 id="review-title">Revisa tu pedido</h2></div><button class="close-button" type="button" data-close aria-label="Cerrar revisión">×</button></div>
+    <p id="review-label" class="modal-description"></p><div id="review-items" class="review-items"></div><div class="review-total"><span id="review-total-label">Total del pedido</span><strong id="review-total"></strong></div><p id="review-print-note" class="muted export-note">Se guardará en este dispositivo y se abrirá la impresión de comandas para Cocina y Barra.</p><button id="confirm-order" class="primary-button" type="button">Confirmar pedido <span aria-hidden="true">✓</span></button>
+  </dialog>
+  <dialog id="clear-dialog" class="modal small-modal" aria-labelledby="clear-title"><div class="modal-heading"><h2 id="clear-title">¿Vaciar este pedido?</h2><button type="button" class="close-button" data-close aria-label="Cerrar">×</button></div><p class="modal-description">Se quitarán los productos y sus personalizaciones del borrador actual.</p><div class="confirm-actions"><button type="button" class="secondary-button" data-close autofocus>Conservar pedido</button><button id="confirm-clear" type="button" class="primary-button">Vaciar pedido</button></div></dialog>
+  <dialog id="cancel-addition-dialog" class="modal small-modal" aria-labelledby="cancel-addition-title"><div class="modal-heading"><h2 id="cancel-addition-title">¿Cancelar los productos nuevos?</h2><button type="button" class="close-button" data-close aria-label="Cerrar">×</button></div><p class="modal-description">Se descartará esta selección. El pedido abierto y el borrador de tu próximo pedido se conservarán.</p><div class="confirm-actions"><button type="button" class="secondary-button" data-close autofocus>Seguir añadiendo</button><button id="confirm-cancel-addition" type="button" class="primary-button">Cancelar selección</button></div></dialog>
+
+  <dialog id="extra-dialog" class="modal small-modal" aria-labelledby="extra-title">
+    <form id="extra-form" novalidate><div class="modal-heading"><div><p class="eyebrow">PRODUCTO PERSONALIZADO</p><h2 id="extra-title">Añadir Extra</h2></div><button type="button" class="close-button" data-close aria-label="Cerrar extras">×</button></div>
+      <label class="extra-field" for="extra-concept">Concepto<input id="extra-concept" name="concepto" type="text" maxlength="100" required placeholder="Descripción del producto" autofocus></label>
+      <label class="extra-field" for="extra-amount">Monto ($)<input id="extra-amount" name="monto" type="text" inputmode="decimal" required placeholder="Ej. 45.50"></label>
+      <p id="extra-error" class="form-error" role="alert" hidden></p><p class="group-help">Este ítem se registra como extra personalizado, sin asignar una categoría del menú.</p><button type="submit" class="primary-button">Añadir al pedido +</button>
+    </form>
+  </dialog>
+
+  <dialog id="history-dialog" class="modal history-modal" aria-labelledby="history-title">
+    <div class="modal-heading"><div><p class="eyebrow">VENTAS DEL RESTAURANTE</p><h2 id="history-title">Historial de pedidos</h2></div><button type="button" class="close-button" data-close aria-label="Cerrar historial">×</button></div>
+    <button id="history-cuts-button" type="button" class="text-button">Ver historial de cortes de caja →</button>
+    <div id="history-layout" class="history-layout"><aside class="history-sidebar" aria-labelledby="history-days-title"><h3 id="history-days-title">Días registrados</h3><div id="history-days" class="history-days" role="group" aria-labelledby="history-days-title"></div></aside>
+      <section id="history-detail" class="history-detail" aria-labelledby="history-day-title" tabindex="0"><p class="eyebrow">CORTE DEL DÍA</p><h3 id="history-day-title" aria-live="polite"></h3><p class="history-note">Ventas por fecha de pago de cada producto, en horario de Mérida.</p><div id="history-summary" class="history-summary"></div><div id="history-category-kpis" class="history-category-kpis"></div><p id="history-extra-note" class="history-note"></p><div class="history-orders-heading"><h3>Pedidos del día</h3><span id="history-order-count"></span></div><div id="history-orders" class="history-orders"></div></section>
+    </div><p id="history-empty" class="empty-state" hidden>Aún no hay pedidos registrados.</p>
+  </dialog>
+
+  <dialog id="load-dialog" class="modal load-modal" aria-labelledby="load-title">
+    <div class="modal-heading"><div><p class="eyebrow">GUARDADO EN ESTE DISPOSITIVO</p><h2 id="load-title">Cargar Expediente</h2></div><button type="button" class="close-button" data-close aria-label="Cerrar expedientes">×</button></div>
+    <p class="modal-description">Selecciona un día para consultar su corte y sus pedidos.</p><div id="load-days" class="load-days" role="group" aria-label="Expedientes por día"></div><p id="load-empty" class="empty-state" hidden>No hay días guardados todavía.</p><button id="load-selected-day" type="button" class="primary-button" disabled>Abrir expediente →</button>
+  </dialog>
+
+  <dialog id="ticket-dialog" class="modal ticket-modal" aria-labelledby="ticket-title">
+    <div class="modal-heading"><div><p class="eyebrow">DETALLE DEL PEDIDO</p><h2 id="ticket-title"></h2></div><button type="button" class="close-button" data-close aria-label="Cerrar pedido">×</button></div>
+    <p id="ticket-meta" class="modal-description"></p>
+    <p id="ticket-status" class="ticket-status"></p>
+    <div class="ticket-tools"><button id="add-to-order" type="button" class="secondary-button">Añadir productos +</button></div>
+    <div id="ticket-lines" class="ticket-lines"></div>
+    <details id="ticket-removed" class="ticket-removed" hidden><summary id="ticket-removed-title">Productos eliminados</summary><div id="ticket-removed-lines"></div></details>
+    <div class="review-total"><span>Total del pedido</span><strong id="ticket-total"></strong></div>
+    <p id="ticket-balance" class="ticket-balance"></p>
+    <div class="ticket-reprints" role="group" aria-label="Reimpresiones del pedido">
+      <button id="reprint-kitchen" type="button" class="secondary-button">Reimprimir Comanda Cocina</button>
+      <button id="reprint-bar" type="button" class="secondary-button">Reimprimir Comanda Barra</button>
+      <button id="print-bill" type="button" class="secondary-button">Reimprimir Cuenta</button>
+    </div>
+    <div class="ticket-actions"><button id="prepare-all" type="button" class="secondary-button">Preparar todo</button><button id="reprint-order" type="button" class="secondary-button">Reimprimir ambas áreas</button><button id="pay-all" type="button" class="primary-button">Cobrar pendientes</button></div>
+  </dialog>
+
+  <dialog id="remove-item-dialog" class="modal small-modal" aria-labelledby="remove-item-title" aria-describedby="remove-item-description">
+    <div class="modal-heading"><h2 id="remove-item-title">¿Eliminar este producto?</h2><button type="button" class="close-button" data-close aria-label="Cerrar eliminación">×</button></div>
+    <p id="remove-item-description" class="modal-description"></p>
+    <p class="group-help">Si la comanda ya se envió, avisa a Cocina o Barra de la cancelación.</p>
+    <p id="remove-item-error" class="form-error" role="alert" hidden></p>
+    <div class="confirm-actions"><button type="button" class="secondary-button" data-close autofocus>Conservar producto</button><button id="confirm-remove-item" type="button" class="primary-button danger-button">Eliminar producto</button></div>
+  </dialog>
+
+  <dialog id="cash-open-dialog" class="modal small-modal cash-modal" aria-labelledby="cash-open-title" aria-describedby="cash-open-note">
+    <form id="cash-open-form" novalidate>
+      <div class="modal-heading"><div><p class="eyebrow">INICIO DEL TURNO</p><h2 id="cash-open-title">Apertura de Caja</h2></div><button type="button" class="close-button" data-close aria-label="Cancelar apertura">×</button></div>
+      <p id="cash-open-note" class="modal-description">Captura el efectivo con el que inicia el turno. Es obligatorio abrir la caja antes de cobrar; puedes iniciar con $0.00.</p>
+      <label class="cash-field" for="cash-opening-fund">Fondo de Caja ($)<input id="cash-opening-fund" type="text" inputmode="decimal" maxlength="12" placeholder="Ej. 500.00" required autofocus></label>
+      <p id="cash-open-error" class="form-error" role="alert" hidden></p>
+      <button type="submit" class="primary-button">Abrir turno</button>
+    </form>
+  </dialog>
+
+  <dialog id="cash-payment-dialog" class="modal small-modal cash-modal cash-payment-modal" aria-labelledby="cash-payment-title" aria-describedby="cash-payment-note">
+    <form id="cash-payment-form" novalidate>
+      <div class="modal-heading"><div><p class="eyebrow">REGISTRAR COBRO</p><h2 id="cash-payment-title">Cobrar pedido</h2></div><button type="button" class="close-button" data-close aria-label="Cancelar cobro">×</button></div>
+      <p id="cash-payment-note" class="modal-description"></p>
+      <div class="cash-payment-total"><span>Total a Pagar</span><strong id="cash-payment-total">$0.00</strong></div>
+      <div class="cash-payment-inputs">
+        <label class="cash-field" for="cash-payment-cash">Monto recibido en Efectivo ($)<input id="cash-payment-cash" name="efectivoRecibido" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0" aria-describedby="cash-payment-help cash-payment-status" autofocus></label>
+        <label class="cash-field" for="cash-payment-card">Monto en Tarjeta/Transferencia ($)<input id="cash-payment-card" name="montoTarjeta" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0" aria-describedby="cash-payment-help cash-payment-status"></label>
+      </div>
+      <p id="cash-payment-help" class="group-help">Puedes combinar ambos métodos. Un campo vacío equivale a $0.00. El cambio se entrega del efectivo recibido.</p>
+      <p id="cash-payment-status" class="cash-payment-status" data-state="missing" role="status" aria-live="polite" aria-atomic="true">Faltan: $0.00</p>
+      <p id="cash-payment-error" class="form-error" role="alert" hidden></p>
+      <button id="cash-payment-confirm" type="submit" class="primary-button" disabled>Confirmar Pago</button>
+    </form>
+  </dialog>
+
+  <dialog id="cash-expense-dialog" class="modal small-modal cash-modal" aria-labelledby="cash-expense-title">
+    <form id="cash-expense-form" novalidate>
+      <div class="modal-heading"><div><p class="eyebrow">SALIDA DE EFECTIVO</p><h2 id="cash-expense-title">Registrar Gasto Extra</h2></div><button type="button" class="close-button" data-close aria-label="Cancelar gasto">×</button></div>
+      <p class="modal-description">Se descontará únicamente del efectivo del turno.</p>
+      <label class="cash-field" for="cash-expense-amount">Monto ($)<input id="cash-expense-amount" type="text" inputmode="decimal" maxlength="12" placeholder="Ej. 80.50" required autofocus></label>
+      <label class="cash-field" for="cash-expense-concept">Concepto<input id="cash-expense-concept" type="text" maxlength="100" placeholder="Ej. Compra de hielo" required></label>
+      <p id="cash-expense-error" class="form-error" role="alert" hidden></p>
+      <button type="submit" class="primary-button">Guardar gasto</button>
+    </form>
+  </dialog>
+
+  <dialog id="cash-tips-dialog" class="modal cash-modal tips-modal" aria-labelledby="cash-tips-title">
+    <div class="modal-heading"><div><p class="eyebrow">PARA EL EQUIPO</p><h2 id="cash-tips-title">Propinas del turno</h2></div><button type="button" class="close-button" data-close aria-label="Cerrar propinas">×</button></div>
+    <p class="modal-description">Registra las propinas recibidas y acuerda cómo repartirlas al cerrar.</p>
+    <div class="tips-collected"><span>Total recolectado</span><strong id="tips-total">$0.00</strong><p id="tips-methods"></p></div>
+    <form id="cash-tip-form" novalidate>
+      <h3>Registrar propina</h3>
+      <div class="tips-input-row">
+        <label class="cash-field" for="cash-tip-amount">Monto ($)<input id="cash-tip-amount" type="text" inputmode="decimal" maxlength="12" placeholder="0" required></label>
+        <label class="cash-field" for="cash-tip-method">Recibida en<select id="cash-tip-method"><option value="efectivo">Efectivo</option><option value="tarjeta">Tarjeta / transferencia</option></select></label>
+      </div>
+      <p id="cash-tip-error" class="form-error" role="alert" hidden></p>
+      <button type="submit" class="secondary-button">Guardar propina</button>
+    </form>
+    <details class="cash-expenses tips-records"><summary id="tips-records-title">Propinas registradas</summary><ul id="tips-records-list"></ul></details>
+    <form id="tips-split-form" class="tips-split-form" novalidate>
+      <h3>Repartir propinas</h3>
+      <div class="tips-input-row">
+        <label class="cash-field" for="tips-split-type">Forma de reparto<select id="tips-split-type"><option value="igual">Partes iguales</option><option value="porcentaje">Por porcentaje</option></select></label>
+        <label class="cash-field" for="tips-people-count">Número de personas<input id="tips-people-count" type="number" min="1" max="50" step="1" value="2" required></label>
+      </div>
+      <div id="tips-percentages" class="tips-percentages" hidden></div>
+      <p id="tips-split-status" class="group-help" role="status" aria-live="polite"></p>
+      <ul id="tips-split-preview" class="tips-split-list"></ul>
+      <p class="group-help">El reparto se guarda en el corte. Este cálculo no registra una salida de dinero.</p>
+      <p id="tips-split-error" class="form-error" role="alert" hidden></p>
+      <button id="tips-save-split" type="submit" class="primary-button">Guardar reparto</button>
+    </form>
+  </dialog>
+
+  <dialog id="cash-close-dialog" class="modal cash-modal" aria-labelledby="cash-close-title">
+    <div class="modal-heading"><div><p class="eyebrow">CIERRE DEL TURNO</p><h2 id="cash-close-title">Corte de Caja</h2></div><button type="button" class="close-button" data-close aria-label="Cerrar corte">×</button></div>
+    <p id="cash-close-note" class="modal-description"></p>
+    <label class="cash-field" for="cash-daily-tip">Propina del Día ($)<input id="cash-daily-tip" type="number" min="0" max="999999.99" step="0.01" inputmode="decimal" value="0" aria-describedby="cash-daily-tip-help"></label>
+    <p id="cash-daily-tip-help" class="group-help">Total de propinas del turno, incluidas las ya registradas. La diferencia se registra como propina en efectivo al cerrar. Las propinas de tarjeta se capturan en Propinas y reparto.</p>
+    <dl id="cash-summary" class="cash-summary"></dl>
+    <details class="cash-expenses"><summary id="cash-expenses-title">Conceptos de gastos</summary><ul id="cash-expenses-list"></ul></details>
+    <section id="cash-close-tips" class="cash-cut-tips" aria-label="Reparto de propinas"></section>
+    <button id="cash-close-edit-tips" type="button" class="text-button">Configurar propinas y reparto</button>
+    <p class="group-help">Imprimir Corte genera una vista previa del turno abierto. Al cerrar, se guardará el corte con la propina y se abrirá su impresión final. Los pedidos pendientes podrán cobrarse en el siguiente turno.</p>
+    <p id="cash-close-error" class="form-error" role="alert" hidden></p>
+    <button id="print-current-cut" type="button" class="secondary-button">Imprimir Corte</button>
+    <button id="close-shift" type="button" class="primary-button">Cerrar Turno</button>
+  </dialog>
+
+  <dialog id="cash-history-dialog" class="modal cash-history-modal" aria-labelledby="cash-history-title">
+    <div class="modal-heading"><div><p class="eyebrow">CONTROL DE EFECTIVO</p><h2 id="cash-history-title">Cortes guardados</h2></div><button type="button" class="close-button" data-close aria-label="Cerrar cortes guardados">×</button></div>
+    <div id="cash-history-list" class="cash-history-list"></div>
+    <p id="cash-history-empty" class="empty-state" hidden>Aún no hay turnos cerrados.</p>
+  </dialog>
+
+  <section id="open-orders-bar" class="open-orders-bar" aria-labelledby="open-orders-title"><div class="queue-heading"><h2 id="open-orders-title">Pedidos abiertos <span id="open-orders-count">0</span></h2><button id="toggle-queue" type="button" aria-expanded="true" aria-controls="open-orders-list">Ocultar ↓</button></div><div id="open-orders-list" class="open-orders-list"></div></section>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <noscript><p class="noscript">Activa JavaScript para ver el catálogo y preparar pedidos.</p></noscript>
+  <div id="zona-impresion"></div>
+</body>
+</html>

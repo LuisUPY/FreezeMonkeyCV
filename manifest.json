@@ -1,0 +1,18 @@
+{
+  "background_color": "#faf6ef",
+  "description": "Catálogo y pedidos de Freeze Monkey.",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "Freeze Monkey",
+  "orientation": "any",
+  "scope": "./",
+  "short_name": "Freeze Monkey",
+  "start_url": "./",
+  "theme_color": "#8a6746",
+  "lang": "es",
+  "categories": [
+    "finance",
+    "productivity",
+    "utilities"
+  ]
+}

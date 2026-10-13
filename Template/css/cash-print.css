@@ -1,0 +1,100 @@
+/* Caja: conserva los colores y diálogos del POS. */
+.cash-field { display: block; font-size: 12px; margin: 20px 0; }
+.cash-field input { display: block; width: 100%; padding: 12px; margin-top: 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--cream); color: var(--ink); }
+.cash-field input:focus-visible { outline: 2px solid var(--forest); outline-offset: 2px; }
+.cash-modal .primary-button { width: 100%; justify-content: center; margin-top: 20px; }
+.cash-payment-total { display: grid; gap: 8px; margin: 22px 0; padding: 22px 16px; border-radius: 12px; background: var(--cream); text-align: center; }
+.cash-payment-total > span { color: var(--muted); font-size: 13px; }
+.cash-payment-total > strong { color: var(--forest); font-size: clamp(30px, 7vw, 42px); line-height: 1.2; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.cash-payment-inputs { display: grid; gap: 16px; }
+.cash-payment-inputs .cash-field { margin: 0; line-height: 1.5; }
+.cash-payment-inputs input { font-size: 18px; font-variant-numeric: tabular-nums; }
+.cash-payment-status { margin: 18px 0 0; padding: 14px 16px; border: 1px solid; border-radius: 8px; font-size: 15px; line-height: 1.5; font-weight: 600; font-variant-numeric: tabular-nums; }
+.cash-payment-status[data-state="missing"], .cash-payment-status[data-state="invalid"] { color: #a32d35; background: #fff1f2; border-color: #efc5c9; }
+.cash-payment-status[data-state="complete"], .cash-payment-status[data-state="change"] { color: #246044; background: #edf8f0; border-color: #b7dcc3; }
+.cash-payment-status[data-state="change"] { font-size: 17px; }
+.cash-payment-modal .primary-button:disabled { cursor: not-allowed; opacity: .45; }
+.cash-summary { margin: 22px 0 18px; font-size: 12px; }
+.cash-summary-row { display: flex; justify-content: space-between; align-items: baseline; gap: 18px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.cash-summary dt { line-height: 1.6; min-width: 0; overflow-wrap: anywhere; }
+.cash-summary dd { margin: 0; font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; flex-shrink: 0; }
+.cash-summary-row.expected { padding: 15px 12px; border-radius: 8px; background: var(--forest); color: var(--paper); font-size: 14px; }
+.cash-summary-row.sales { margin-top: 6px; font-size: 14px; }
+.cash-expenses { font-size: 12px; margin: 18px 0; }
+.cash-expenses summary { cursor: pointer; color: var(--forest); padding: 8px 0; }
+.cash-expenses ul { list-style: none; padding: 0; margin: 8px 0; }
+.cash-expenses li { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px dashed var(--line); line-height: 1.6; }
+.cash-expenses li > span { overflow-wrap: anywhere; min-width: 0; }
+.cash-expenses li > strong { flex-shrink: 0; font-variant-numeric: tabular-nums; }
+.cash-history-modal { width: min(680px, calc(100% - 28px)); }
+.cash-history-list { margin-top: 20px; }
+.cash-saved-cut { border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-top: 12px; }
+.cash-saved-cut > details > summary { cursor: pointer; line-height: 1.8; font-size: 12px; overflow-wrap: anywhere; }
+.cash-saved-cut .cash-summary { margin-top: 12px; }
+
+@media (max-width: 700px) {
+  .cash-summary-row { gap: 10px; }
+  .cash-summary-row.expected, .cash-summary-row.sales { font-size: 12px; }
+}
+
+/* Comandas térmicas: zona directa del body, fuera de los diálogos. */
+#zona-impresion { display: none; }
+@page { margin: 0; }
+@media print {
+  html, body { margin: 0 !important; padding: 0 !important; width: 80mm !important; min-width: 0 !important; background: #fff !important; color: #000 !important; }
+  body > :not(#zona-impresion) { display: none !important; }
+  dialog, dialog::backdrop { display: none !important; }
+  #zona-impresion {
+    display: block !important;
+    position: static !important;
+    width: 80mm;
+    max-width: 80mm;
+    margin: 0;
+    padding: 3mm;
+    box-sizing: border-box;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 13px;
+    line-height: 1.45;
+    color: #000;
+    background: #fff;
+    word-wrap: break-word;
+    overflow-wrap: anywhere;
+  }
+  #zona-impresion * { color: #000; font-family: inherit; max-width: 100%; }
+  .comanda-ticket { margin: 0; padding: 0 0 12px; }
+  .comanda-ticket + .comanda-ticket { break-before: page; page-break-before: always; }
+  .comanda-cabecera { text-align: center; border-bottom: 1px dashed #000; padding-bottom: 10px; }
+  .comanda-cabecera h2 { font-size: 17px; margin: 8px 0; }
+  .comanda-cabecera p, .comanda-cabecera h3 { margin: 4px 0; }
+  .comanda-area { font-size: 18px; font-weight: bold; }
+  .comanda-lista { list-style: none; padding: 0; margin: 12px 0; }
+  .comanda-producto { margin: 0 0 12px; break-inside: avoid; page-break-inside: avoid; }
+  .comanda-producto > strong { display: block; }
+  .comanda-modificadores { list-style: none; padding: 0 0 0 16px; margin: 4px 0 0; font-size: 12px; }
+  .comanda-modificadores li { white-space: pre-wrap; }
+  .comanda-aviso { font-size: 11px; margin: 4px 0; }
+  .comanda-pie { border-top: 1px dashed #000; padding-top: 8px; margin-top: 12px; text-align: center; font-size: 11px; }
+  .cuenta-ayuda { font-size: 11px; margin: 9px 0; }
+  .cuenta-fila { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-top: 5px; }
+  .cuenta-fila > strong { flex-shrink: 0; font-variant-numeric: tabular-nums; }
+  .cuenta-totales { border-top: 1px dashed #000; padding-top: 8px; }
+  .cuenta-total { font-size: 18px; font-weight: bold; }
+  .cuenta-pagos { border-top: 1px dashed #000; margin-top: 12px; padding-top: 8px; }
+  .cuenta-pagos h4 { font-size: 12px; margin: 0 0 8px; }
+}
+
+/* El corte comparte el papel térmico de las comandas y ocupa un solo ticket. */
+@media print {
+  .corte-resumen { margin: 12px 0; }
+  .corte-fila { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin: 7px 0; }
+  .corte-fila > span { min-width: 0; overflow-wrap: anywhere; }
+  .corte-fila > strong { flex-shrink: 0; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .corte-destacado { font-size: 15px; font-weight: bold; border-top: 1px dashed #000; border-bottom: 1px dashed #000; padding: 8px 0; }
+  .corte-total { font-weight: bold; margin-top: 10px; }
+  .corte-seccion { margin-top: 14px; border-top: 1px dashed #000; padding-top: 8px; }
+  .corte-seccion h4 { font-size: 13px; margin: 0 0 8px; }
+  .corte-seccion > p { margin: 6px 0; }
+  .corte-movimiento, .corte-fila { break-inside: avoid; page-break-inside: avoid; }
+  .corte-fecha, .corte-ayuda { font-size: 11px; line-height: 1.4; margin: 4px 0; }
+  .corte-movimiento + .corte-movimiento { margin-top: 10px; }
+}
